@@ -1,0 +1,15 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+        <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+            <item name="colorPrimary">@color/blueBlack</item>
+            <item name="colorPrimaryDark">@color/blue</item>
+            <item name="colorAccent">@color/teal_700</item>
+        </style>
+
+
+
+
+</resources>
