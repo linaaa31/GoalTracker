@@ -21,12 +21,26 @@
         android:inputType="text"
         android:maxLines="3" />
 
-    <EditText
-        android:id="@+id/period_edit_text"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="@string/period_hint"
-        android:inputType="text"
-        android:maxLines="1" />
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="2dp"
+        android:textSize="17sp"
+        android:text="Select period in hours:" />
+
+    <NumberPicker
+        android:id="@+id/period_np"
+        android:layout_width="wrap_content"
+        android:layout_height="94dp"
+        android:layout_marginStart="2dp"
+        android:autofillHints="hours"/>
+    <!--    <EditText-->
+<!--        android:id="@+id/period_edit_text"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:hint="@string/period_hint"-->
+<!--        android:inputType="text"-->
+<!--        android:maxLines="1" />-->
 
 </LinearLayout>
