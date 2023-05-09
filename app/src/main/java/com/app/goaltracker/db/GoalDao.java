@@ -14,7 +14,7 @@ public interface GoalDao {
     List<Goal> getAllGoals();
 
     @Insert
-    void insert(Goal goal);
+    void insertGoal(Goal goal);
 
     @Update
     void updateGoal(Goal goal);
