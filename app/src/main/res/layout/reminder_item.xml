@@ -27,7 +27,7 @@
         android:textSize="20sp"
         android:textStyle="bold"
         android:gravity="start"
-        android:textColor="@color/blueBlack"
+        android:textColor="@color/blue_black"
         android:layout_marginStart="15dp"
         android:layout_marginTop="10dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -39,7 +39,7 @@
         android:layout_height="wrap_content"
         android:textSize="15sp"
         android:gravity="start"
-        android:textColor="@color/blueBlack"
+        android:textColor="@color/blue_black"
         android:layout_marginStart="15dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/goal_name_item"/>
@@ -51,7 +51,7 @@
         android:text="Did it go well?"
         android:textSize="20sp"
         android:gravity="center"
-        android:textColor="@color/blueBlack"
+        android:textColor="@color/blue_black"
         app:layout_constraintTop_toBottomOf="@id/goal_desc_item"/>
 <LinearLayout
     android:id="@+id/linear"
@@ -66,7 +66,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:backgroundTint="@color/blueBlack"
+        android:backgroundTint="@color/blue_black"
         android:text="Yes"
         android:layout_marginEnd="40dp"
         android:layout_marginStart="40dp" />
@@ -76,7 +76,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:backgroundTint="@color/blueBlack"
+        android:backgroundTint="@color/blue_black"
         android:text="No"
         android:layout_marginEnd="40dp"
         android:layout_marginStart="40dp"/>

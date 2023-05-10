@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
 
         <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-            <item name="colorPrimary">@color/blueBlack</item>
+            <item name="colorPrimary">@color/blue_black</item>
             <item name="colorPrimaryDark">@color/blue</item>
             <item name="colorAccent">@color/teal_700</item>
         </style>
