@@ -44,14 +44,10 @@ public class GoalsViewModel extends AndroidViewModel {
     }
 
     public void addGoal(@NonNull String goalName, Integer period) {
-        if (!TextUtils.isEmpty(goalName)) {
-            AsyncTask.execute(() -> {
-                appDatabase.goalDao().insertGoal(new Goal(goalName, period));
-                refreshGoalList();
-            });
-        } else {
-            Toast.makeText(getApplication(), "There are no goals", Toast.LENGTH_SHORT).show();
-        }
+        AsyncTask.execute(() -> {
+            appDatabase.goalDao().insertGoal(new Goal(goalName, period));
+            refreshGoalList();
+        });
     }
 
     public void deleteGoal(Goal goal) {

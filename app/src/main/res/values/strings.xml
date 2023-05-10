@@ -7,9 +7,10 @@
     <string name="submit_button">Submit</string>
     <string name="empty_goal_error">Please enter a name for the goal.</string>
     <string name="cancel_button">Cancel</string>
-    <string name="goal_name_hint">describe your goal, e.g quit smoking</string>
-    <string name="goal_period_hint">period in hours: </string>
-    <string name="add_goal_button">Submit</string>
+    <string name="goal_name_hint">describe the goal, e.g quit smoking</string>
+    <string name="goal_period_hint">remind me every: </string>
+    <string name="goal_period_unit">hours</string>
+    <string name="add_goal_button">Add</string>
     <string name="label_next_reminder">Next reminder at: %1$d</string>
 
 </resources>

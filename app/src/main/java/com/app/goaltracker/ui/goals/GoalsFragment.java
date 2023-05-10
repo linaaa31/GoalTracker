@@ -34,57 +34,35 @@ import java.util.List;
 public class GoalsFragment extends Fragment {
     private GoalAdapter goalAdapter;
     private GoalsViewModel goalsViewModel;
-        public View onCreateView(@NonNull LayoutInflater inflater,
-                                 ViewGroup container, Bundle savedInstanceState) {
-            View root = inflater.inflate(R.layout.fragment_goals, container, false);
-            RecyclerView recyclerView = root.findViewById(R.id.goal_list);
-            recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
-            recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-            goalAdapter = new GoalAdapter(requireContext());
-            recyclerView.setAdapter(goalAdapter);
-            recyclerView.scrollToPosition(0);
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
+        View root = inflater.inflate(R.layout.fragment_goals, container, false);
+        RecyclerView recyclerView = root.findViewById(R.id.goal_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        goalAdapter = new GoalAdapter();
+        recyclerView.setAdapter(goalAdapter);
 
-            goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
-            goalsViewModel.getGoals().observe(getViewLifecycleOwner(), goals -> {
-                goalAdapter.setGoalList(goals);
-            });
+        goalsViewModel = new ViewModelProvider(requireActivity()).get(GoalsViewModel.class);
+        goalsViewModel.getGoals().observe(getViewLifecycleOwner(), goals -> {
+            goalAdapter.setGoalList(goals);
+        });
 
-            FloatingActionButton fab = root.findViewById(R.id.add_goal);
-            fab.setOnClickListener(view -> {
-                showAddGoalDialog();
-            });
-
-            return root;
-        }
-
-
-    private void showAddGoalDialog() {
+        FloatingActionButton fab = root.findViewById(R.id.add_goal);
+        fab.setOnClickListener(view -> {
             AddGoalDialog addGoalDialog = new AddGoalDialog();
             addGoalDialog.show(getChildFragmentManager(), "add_goal");
-//        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_goal, null);
-//        EditText goalNameEditText = dialogView.findViewById(R.id.name_edit_text);
-//        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
-//                .setTitle(R.string.add_goal_title)
-//                .setView(dialogView)
-//                .setPositiveButton(R.string.submit_button, (dialog, which) -> {
-//                    String goalName = goalNameEditText.getText().toString().trim();
-//                   // String period = periodEditText.getText().toString().trim();
-//                    goalsViewModel.addGoal(goalName, 2);
-//                });
-//        AlertDialog alertDialog = builder.create();
-//        alertDialog.show();
+        });
+
+        return root;
     }
+
     private class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalCardHolder> {
         List<Goal> goalList;
-        private Context context;
 
         public void setGoalList(List<Goal> goalList) {
            // this.goalList = goalList;
             this.goalList = new ArrayList<>(goalList);
             notifyDataSetChanged();
-        }
-        public GoalAdapter(Context context) {
-            this.context = context;
         }
 
         public GoalAdapter.GoalCardHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

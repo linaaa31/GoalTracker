@@ -9,16 +9,26 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.DialogFragment;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.app.goaltracker.GoalsViewModel;
 import com.app.goaltracker.R;
+import com.app.goaltracker.databinding.DialogAddGoalBinding;
+
+import java.util.Objects;
 
 public class AddGoalDialog extends DialogFragment {
+    private DialogAddGoalBinding binding;
+    private GoalsViewModel goalsViewModel;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.dialog_add_goal, container, false);
+        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_add_goal, container, false);
+        return binding.getRoot();
     }
 
     @Override
@@ -26,10 +36,22 @@ public class AddGoalDialog extends DialogFragment {
         super.onResume();
         DisplayMetrics metrics = getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-
-        getDialog().getWindow().setLayout((6 * width)/7, ViewGroup.LayoutParams.WRAP_CONTENT);
+        getDialog().getWindow().setLayout((95 * width)/100, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
-    
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        binding.goalReminderPeriod.setMinValue(1);
+        binding.goalReminderPeriod.setMaxValue(24);
+        binding.goalReminderPeriod.setValue(4);
+
+        goalsViewModel = new ViewModelProvider(requireActivity()).get(GoalsViewModel.class);
+
+        binding.goalAddButton.setOnClickListener(v -> {
+                goalsViewModel.addGoal(binding.nameEditText.getText().toString(), binding.goalReminderPeriod.getValue());
+                dismiss();
+            }
+        );
+    }
 }
