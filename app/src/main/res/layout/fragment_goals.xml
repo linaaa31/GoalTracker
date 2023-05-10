@@ -8,19 +8,18 @@
     tools:context=".ui.goals.GoalsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="0dp"
+        android:id="@+id/goal_list"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="@id/addNewGoal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-   />
+        app:layout_constraintBottom_toTopOf="@id/add_goal"
+        android:background="@color/blue" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addNewGoal"
+        android:id="@+id/add_goal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="70dp"

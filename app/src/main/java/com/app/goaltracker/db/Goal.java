@@ -17,38 +17,15 @@ public class Goal {
     @ColumnInfo(name = "goal_name")
     private String goalName;
 
-    @Nullable
-    @ColumnInfo(name = "goal_description")
-    private String goalDescription;
-
-
     @ColumnInfo(name = "period")
-    private String period;
+    private Integer periodHours;
 
-    @ColumnInfo(name = "status")
-    private String statusColor;
 
-    public Goal(@NonNull String goalName, @Nullable String goalDescription, String period) {
+    public Goal(@NonNull String goalName, Integer periodHours) {
         this.goalName = goalName;
-        this.goalDescription = goalDescription;
-        this.period = period;
+        this.periodHours = periodHours;
     }
 
-    public String getPeriod() {
-        return period;
-    }
-
-    public void setStatusColor(String statusColor) {
-        this.statusColor = statusColor;
-    }
-
-    public String getStatusColor() {
-        return statusColor;
-    }
-
-    public void setPeriod(String period) {
-        this.period = period;
-    }
 
     public int getGoalId() {
         return goalId;
@@ -67,13 +44,11 @@ public class Goal {
         this.goalName = goalName;
     }
 
-    @Nullable
-    public String getGoalDescription() {
-        return goalDescription;
+    public Integer getPeriodHours() {
+        return periodHours;
     }
 
-    public void setGoalDescription(@Nullable String goalDescription) {
-        this.goalDescription = goalDescription;
+    public void setPeriodHours(Integer periodHours) {
+        this.periodHours = periodHours;
     }
-
 }

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -13,34 +14,11 @@
         android:inputType="text"
         android:maxLines="1" />
 
-    <EditText
-        android:id="@+id/desc_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/goal_description_hint"
-        android:inputType="text"
-        android:maxLines="3" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:layout_marginStart="2dp"
+        android:layout_marginTop="16dp"
         android:textSize="17sp"
-        android:text="Select period in hours:" />
-
-    <NumberPicker
-        android:id="@+id/period_np"
-        android:layout_width="wrap_content"
-        android:layout_height="94dp"
-        android:layout_marginStart="2dp"
-        android:autofillHints="hours"/>
-    <!--    <EditText-->
-<!--        android:id="@+id/period_edit_text"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:hint="@string/period_hint"-->
-<!--        android:inputType="text"-->
-<!--        android:maxLines="1" />-->
+        android:text="@string/goal_period_hint" />
 
 </LinearLayout>

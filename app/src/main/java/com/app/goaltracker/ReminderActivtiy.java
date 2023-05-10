@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -30,7 +31,6 @@ public class ReminderActivtiy extends AppCompatActivity {
 
         goalsRecyclerView = findViewById(R.id.reminder_rv);
         goalsRecyclerView.setAdapter(new ReminderAdapter(this));
-
 
         GoalsViewModel goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
         goalsViewModel.getGoals().observe(this, new Observer<List<Goal>>() {
@@ -79,13 +79,9 @@ public class ReminderActivtiy extends AppCompatActivity {
             Goal currentGoal = goals.get(position);
             Goal goal = goals.get(position);
             holder.goalNameTextView.setText(goal.getGoalName());
-            holder.goalDescriptionTextView.setText(goal.getGoalDescription());
-            holder.yesButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Call the method to update the database with the result
-                    goalsViewModel.addHistory(currentGoal.getGoalId(), true);
-                }
+            holder.yesButton.setOnClickListener(v -> {
+                // Call the method to update the database with the result
+                goalsViewModel.addHistory(currentGoal.getGoalId(), true);
             });
             holder.noButton.setOnClickListener(new View.OnClickListener() {
                 @Override

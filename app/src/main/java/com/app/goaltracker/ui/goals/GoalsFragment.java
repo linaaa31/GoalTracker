@@ -3,6 +3,7 @@ package com.app.goaltracker.ui.goals;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +30,14 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class GoalsFragment extends Fragment {
     private GoalAdapter goalAdapter;
     private GoalsViewModel goalsViewModel;
         public View onCreateView(@NonNull LayoutInflater inflater,
                                  ViewGroup container, Bundle savedInstanceState) {
             View root = inflater.inflate(R.layout.fragment_goals, container, false);
-            RecyclerView recyclerView = root.findViewById(R.id.recyclerView);
+            RecyclerView recyclerView = root.findViewById(R.id.goal_list);
             recyclerView.addItemDecoration(new DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
             recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
             goalAdapter = new GoalAdapter(requireContext());
@@ -47,7 +49,7 @@ public class GoalsFragment extends Fragment {
                 goalAdapter.setGoalList(goals);
             });
 
-            FloatingActionButton fab = root.findViewById(R.id.addNewGoal);
+            FloatingActionButton fab = root.findViewById(R.id.add_goal);
             fab.setOnClickListener(view -> {
                 showAddGoalDialog();
             });
@@ -57,34 +59,20 @@ public class GoalsFragment extends Fragment {
 
 
     private void showAddGoalDialog() {
-        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_goal, null);
-        EditText goalNameEditText = dialogView.findViewById(R.id.name_edit_text);
-        EditText goalDescriptionEditText = dialogView.findViewById(R.id.desc_edit_text);
-        NumberPicker periodNumberPicker = dialogView.findViewById(R.id.period_np);
-        periodNumberPicker.setMinValue(1);
-        periodNumberPicker.setMaxValue(12);
-        periodNumberPicker.setWrapSelectorWheel(false);
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
-                .setTitle(R.string.add_goal_title)
-                .setView(dialogView)
-                .setPositiveButton(R.string.submit_button, (dialog, which) -> {
-                    String goalName = goalNameEditText.getText().toString().trim();
-                    String goalDescription = goalDescriptionEditText.getText().toString().trim();
-                   // String period = periodEditText.getText().toString().trim();
-                    int periodValue = periodNumberPicker.getValue();
-                    String period = periodValue + " hours";
-
-                    if (!TextUtils.isEmpty(goalName)) {
-                        goalsViewModel.addGoal(goalName, goalDescription, period);
-                    } else {
-                        Toast.makeText(requireContext(), R.string.empty_goal_error, Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton(R.string.cancel_button, (dialog, which) -> {
-                    dialog.cancel();
-                });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+            AddGoalDialog addGoalDialog = new AddGoalDialog();
+            addGoalDialog.show(getChildFragmentManager(), "add_goal");
+//        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_goal, null);
+//        EditText goalNameEditText = dialogView.findViewById(R.id.name_edit_text);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
+//                .setTitle(R.string.add_goal_title)
+//                .setView(dialogView)
+//                .setPositiveButton(R.string.submit_button, (dialog, which) -> {
+//                    String goalName = goalNameEditText.getText().toString().trim();
+//                   // String period = periodEditText.getText().toString().trim();
+//                    goalsViewModel.addGoal(goalName, 2);
+//                });
+//        AlertDialog alertDialog = builder.create();
+//        alertDialog.show();
     }
     private class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalCardHolder> {
         List<Goal> goalList;
@@ -102,43 +90,33 @@ public class GoalsFragment extends Fragment {
         public GoalAdapter.GoalCardHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             Context context = parent.getContext();
             LayoutInflater inflater = LayoutInflater.from(context);
-            return new GoalAdapter.GoalCardHolder(inflater.inflate(R.layout.item_recycler_view, parent, false));
+            return new GoalAdapter.GoalCardHolder(inflater.inflate(R.layout.view_goal_list_item, parent, false));
         }
 
         @Override
         public void onBindViewHolder (@NonNull GoalAdapter.GoalCardHolder holder,int position) {
-        holder.nameText.setText(goalList.get(position).getGoalName());
-        holder.descriptionText.setText(goalList.get(position).getGoalDescription());
-        holder.periodText.setText(goalList.get(position).getPeriod());
-
+            holder.nameText.setText(goalList.get(position).getGoalName());
+            holder.nextReminder.setText(getString(R.string.label_next_reminder, goalList.get(position).getPeriodHours()));
         }
-
 
         @Override
         public int getItemCount() {
             return goalList != null ? goalList.size() : 0;
         }
+
         public class GoalCardHolder extends RecyclerView.ViewHolder {
             TextView nameText;
-            TextView descriptionText;
-            TextView periodText;
+            TextView nextReminder;
             ImageView delete;
-
 
 
             public GoalCardHolder(View view) {
                 super(view);
                 nameText = view.findViewById(R.id.name_tv);
-                descriptionText = view.findViewById(R.id.description_tv);
-                periodText = view.findViewById(R.id.period_tv);
+                nextReminder = view.findViewById(R.id.next_reminder_tv);
                 delete = view.findViewById(R.id.goal_delete);
 
-                delete.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        goalsViewModel.deleteGoal(goalList.get(getAdapterPosition()));
-                    }
-                });
+                delete.setOnClickListener(v -> goalsViewModel.deleteGoal(goalList.get(getAdapterPosition())));
             }
         }
     }
