@@ -73,8 +73,8 @@ public class GoalsFragment extends Fragment {
 
         @Override
         public void onBindViewHolder (@NonNull GoalAdapter.GoalCardHolder holder,int position) {
-            holder.nameText.setText(goalList.get(position).getGoalName());
-            holder.nextReminder.setText(getString(R.string.label_next_reminder, goalList.get(position).getPeriodHours()));
+            holder.nameText.setText(goalList.get(position).goalName);
+            holder.nextReminder.setText(getString(R.string.label_next_reminder, goalList.get(position).periodHours));
         }
 
         @Override

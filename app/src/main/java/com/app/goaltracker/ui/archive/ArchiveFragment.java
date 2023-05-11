@@ -1,4 +1,4 @@
-package com.app.goaltracker.ui.history;
+package com.app.goaltracker.ui.archive;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,28 +6,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.app.goaltracker.R;
-import com.app.goaltracker.ReminderActivtiy;
-import com.app.goaltracker.databinding.FragmentHistoryBinding;
-public class HistoryFragment extends Fragment {
+import com.app.goaltracker.ReminderActivity;
+
+public class ArchiveFragment extends Fragment {
 
     private Button showButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_history, container, false);
+        View view = inflater.inflate(R.layout.fragment_archive, container, false);
         showButton = view.findViewById(R.id.open);
         showButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ReminderActivtiy.class);
+                Intent intent = new Intent(getActivity(), ReminderActivity.class);
                 startActivity(intent);
             }
         });

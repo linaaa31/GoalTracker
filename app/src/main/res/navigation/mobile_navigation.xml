@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_goals" />
 
     <fragment
-        android:id="@+id/navigation_history"
-        android:name="com.app.goaltracker.ui.history.HistoryFragment"
-        android:label="@string/title_history"
-        tools:layout="@layout/fragment_history" />
+        android:id="@+id/navigation_archive"
+        android:name="com.app.goaltracker.ui.archive.ArchiveFragment"
+        android:label="@string/title_archive"
+        tools:layout="@layout/fragment_archive" />
 
     <fragment
         android:id="@+id/navigation_settings"

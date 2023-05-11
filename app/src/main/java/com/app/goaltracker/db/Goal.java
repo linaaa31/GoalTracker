@@ -5,50 +5,64 @@ import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
+
+import java.util.Date;
 
 @Entity(tableName = "Goals")
+@TypeConverters(Goal.DateConverter.class)
 public class Goal {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "goal_id")
-    private int goalId;
+    public int goalId;
 
     @NonNull
+    @ColumnInfo(name = "creation_date")
+    public Date creationDate;
+
+    @ColumnInfo(name = "archive_date")
+    public Date archiveDate;
+    @NonNull
     @ColumnInfo(name = "goal_name")
-    private String goalName;
+    public String goalName;
+
+    @NonNull
+    @ColumnInfo(name = "worst_result")
+    public Integer worstResult;
+
+    @NonNull
+    @ColumnInfo(name = "best_result")
+    public Integer bestResult;
 
     @ColumnInfo(name = "period")
-    private Integer periodHours;
+    public Integer periodHours;
+
+    @NonNull
+    @ColumnInfo(name = "archived")
+    public Boolean archived;
 
 
     public Goal(@NonNull String goalName, Integer periodHours) {
+        this.creationDate = new Date();
         this.goalName = goalName;
         this.periodHours = periodHours;
+        this.archived = false;
+        this.worstResult = 0;
+        this.bestResult = 100;
     }
 
+    static class DateConverter {
 
-    public int getGoalId() {
-        return goalId;
-    }
+        @TypeConverter
+        public Date toDate(Long timestamp) {
+            return timestamp == null ? null : new Date(timestamp);
+        }
 
-    public void setGoalId(int goalId) {
-        this.goalId = goalId;
-    }
-
-    @NonNull
-    public String getGoalName() {
-        return goalName;
-    }
-
-    public void setGoalName(@NonNull String goalName) {
-        this.goalName = goalName;
-    }
-
-    public Integer getPeriodHours() {
-        return periodHours;
-    }
-
-    public void setPeriodHours(Integer periodHours) {
-        this.periodHours = periodHours;
+        @TypeConverter
+        public Long toTimestamp(Date date) {
+            return date == null ? null : date.getTime();
+        }
     }
 }
