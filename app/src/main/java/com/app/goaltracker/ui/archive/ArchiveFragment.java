@@ -10,7 +10,7 @@ import android.widget.Button;
 import androidx.fragment.app.Fragment;
 
 import com.app.goaltracker.R;
-import com.app.goaltracker.ReminderActivity;
+import com.app.goaltracker.ui.goals.GoalInfoActivity;
 
 public class ArchiveFragment extends Fragment {
 
@@ -24,7 +24,7 @@ public class ArchiveFragment extends Fragment {
         showButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ReminderActivity.class);
+                Intent intent = new Intent(getActivity(), GoalInfoActivity.class);
                 startActivity(intent);
             }
         });

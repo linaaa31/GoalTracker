@@ -6,6 +6,7 @@
     android:layout_marginBottom="15dp"
     android:layout_marginStart="8dp"
     android:layout_marginEnd="8dp"
+    android:padding="8dp"
     app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="20dp"
     app:cardElevation="8dp"
@@ -21,11 +22,10 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/goal_name_item"
+        android:id="@+id/event_timestamp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
+        android:textSize="16sp"
         android:gravity="start"
         android:textColor="@color/blue_black"
         android:layout_marginStart="15dp"
@@ -34,52 +34,16 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
-        android:id="@+id/goal_desc_item"
+        android:id="@+id/event_result"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
+        android:textSize="17sp"
         android:gravity="start"
-        android:textColor="@color/blue_black"
+        android:textColor="@color/green"
+        android:textStyle="bold"
         android:layout_marginStart="15dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/goal_name_item"/>
+        app:layout_constraintTop_toBottomOf="@id/event_timestamp"/>
 
-    <TextView
-        android:id="@+id/question"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Did it go well?"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:textColor="@color/blue_black"
-        app:layout_constraintTop_toBottomOf="@id/goal_desc_item"/>
-<LinearLayout
-    android:id="@+id/linear"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    app:layout_constraintTop_toBottomOf="@id/question">
-
-
-    <Button
-        android:id="@+id/yes_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:backgroundTint="@color/blue_black"
-        android:text="Yes"
-        android:layout_marginEnd="40dp"
-        android:layout_marginStart="40dp" />
-
-    <Button
-        android:id="@+id/no_button"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:backgroundTint="@color/blue_black"
-        android:text="No"
-        android:layout_marginEnd="40dp"
-        android:layout_marginStart="40dp"/>
-</LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

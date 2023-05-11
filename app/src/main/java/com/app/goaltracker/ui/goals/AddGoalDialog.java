@@ -1,6 +1,5 @@
 package com.app.goaltracker.ui.goals;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -10,15 +9,12 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.app.goaltracker.GoalsViewModel;
+import com.app.goaltracker.mvvm.GoalsViewModel;
 import com.app.goaltracker.R;
 import com.app.goaltracker.databinding.DialogAddGoalBinding;
-
-import java.util.Objects;
 
 public class AddGoalDialog extends DialogFragment {
     private DialogAddGoalBinding binding;

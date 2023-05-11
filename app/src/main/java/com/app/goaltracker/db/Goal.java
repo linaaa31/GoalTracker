@@ -11,7 +11,7 @@ import androidx.room.TypeConverters;
 import java.util.Date;
 
 @Entity(tableName = "Goals")
-@TypeConverters(Goal.DateConverter.class)
+@TypeConverters(DateConverter.class)
 public class Goal {
 
     @PrimaryKey(autoGenerate = true)
@@ -53,16 +53,4 @@ public class Goal {
         this.bestResult = 100;
     }
 
-    static class DateConverter {
-
-        @TypeConverter
-        public Date toDate(Long timestamp) {
-            return timestamp == null ? null : new Date(timestamp);
-        }
-
-        @TypeConverter
-        public Long toTimestamp(Date date) {
-            return date == null ? null : date.getTime();
-        }
-    }
 }

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "3124455290b307b363f4846d29d3775a",
+    "identityHash": "1548459c248bdbf9f425d2500bb06c4e",
     "entities": [
       {
         "tableName": "Goals",
@@ -68,7 +68,7 @@
       },
       {
         "tableName": "History",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`history_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `goal_id` INTEGER NOT NULL, `timestamp` TEXT, `result` INTEGER NOT NULL, FOREIGN KEY(`goal_id`) REFERENCES `Goals`(`goal_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`history_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `goal_id` INTEGER NOT NULL, `timestamp` INTEGER, `result` INTEGER NOT NULL, FOREIGN KEY(`goal_id`) REFERENCES `Goals`(`goal_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "historyId",
@@ -85,7 +85,7 @@
           {
             "fieldPath": "timestamp",
             "columnName": "timestamp",
-            "affinity": "TEXT",
+            "affinity": "INTEGER",
             "notNull": false
           },
           {
@@ -130,7 +130,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3124455290b307b363f4846d29d3775a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1548459c248bdbf9f425d2500bb06c4e')"
     ]
   }
 }

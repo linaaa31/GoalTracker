@@ -14,6 +14,9 @@ public interface HistoryDao {
         @Query("SELECT * FROM History")
         List<History> getAll();
 
+        @Query("SELECT * FROM History WHERE goal_id=:goal")
+        List<History> getHistoryForGoal(Integer goal);
+
         @Insert
         void insertHistory(History history);
 
