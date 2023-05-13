@@ -1,18 +1,25 @@
 package com.app.goaltracker.ui.goals;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.goaltracker.Constants;
+import com.app.goaltracker.MainActivity;
 import com.app.goaltracker.databinding.ActivityGoalInfoBinding;
 import com.app.goaltracker.mvvm.GoalsViewModel;
 import com.app.goaltracker.mvvm.HistoryViewModel;
@@ -26,12 +33,30 @@ public class GoalInfoActivity extends AppCompatActivity {
     private RecyclerView historyRecyclerView;
     private HistoryViewModel historyViewModel;
     private ActivityGoalInfoBinding binding;
+    private ImageView hamburgerMenu;
+    private ImageView backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityGoalInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        backButton = findViewById(R.id.back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        hamburgerMenu = findViewById(R.id.hamburger_menu);
+
+        hamburgerMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopupMenu(v);
+            }
+        });
 
         historyRecyclerView = findViewById(R.id.reminder_rv);
         historyRecyclerView.setAdapter(new ReminderAdapter());
@@ -54,6 +79,33 @@ public class GoalInfoActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void showPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.inflate(R.menu.main_menu);
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+
+                switch (item.getItemId()) {
+                    case R.id.delete_goal:
+                      //  goalsViewModel.deleteGoal();
+
+                    case R.id.archive_goal:
+
+
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        });
+
+        popupMenu.show();
+    }
+
+
 
     private class ReminderAdapter extends RecyclerView.Adapter<ReminderAdapter.ViewHolder> {
         private List<History> historyList;
