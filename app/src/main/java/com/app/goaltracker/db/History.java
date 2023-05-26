@@ -29,9 +29,17 @@ public class History {
     @ColumnInfo(name = "result")
     public boolean result;
 
+    public boolean isResult() {
+        return result;
+    }
+
     public History(int goalId, boolean result) {
         this.goalId = goalId;
         this.timestamp = new Date();
         this.result = result;
+    }
+
+    public int getGoalId() {
+        return goalId;
     }
 }

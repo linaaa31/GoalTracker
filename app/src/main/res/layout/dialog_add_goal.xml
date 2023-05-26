@@ -17,42 +17,45 @@
             android:inputType="text"
             android:maxLines="1" />
 
-        <NumberPicker
-            android:id="@+id/goal_reminder_period"
+        <LinearLayout
+            android:id="@+id/linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/name_edit_text">
+
+        <ImageView
+            android:id="@+id/add_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/name_edit_text"
-            app:layout_constraintLeft_toRightOf="@id/goal_period_hint"
-            android:layout_marginLeft="16dp"
-            android:orientation="horizontal"/>
+            android:src="@drawable/ic_baseline_add_circle"
+            app:layout_constraintRight_toLeftOf="@+id/add_hour"/>
 
         <TextView
-            android:id="@+id/goal_period_hint"
+            android:id="@+id/add_hour"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="@id/goal_reminder_period"
-            app:layout_constraintBottom_toBottomOf="@id/goal_reminder_period"
-            app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="2dp"
+            android:text="@string/add_hour"
+            android:textStyle="bold"
             android:textSize="17sp"
-            android:text="@string/goal_period_hint" />
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:textColor="@color/gray"
+           />
 
-        <TextView
-            android:id="@+id/goal_unit_hint"
-            android:layout_width="wrap_content"
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/hour_container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:text="@string/goal_period_unit"
-            app:layout_constraintTop_toTopOf="@id/goal_reminder_period"
-            app:layout_constraintBottom_toBottomOf="@id/goal_reminder_period"
-            app:layout_constraintLeft_toRightOf="@id/goal_reminder_period"
-            android:layout_marginLeft="16dp" />
-
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/linear_layout"/>
         <Button
             android:id="@+id/goal_add_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/goal_reminder_period"
+            app:layout_constraintTop_toBottomOf="@id/hour_container"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/blue"
@@ -64,3 +67,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
+

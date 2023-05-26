@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,7 +16,9 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -27,6 +30,7 @@ import com.app.goaltracker.R;
 import com.app.goaltracker.db.Goal;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,11 +40,30 @@ public class GoalsFragment extends Fragment {
     private GoalAdapter goalAdapter;
     private GoalsViewModel goalsViewModel;
     private SearchView searchView;
+    private TextView noGoalsMessageTextView;
     ActivityResultLauncher<Intent> infoLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 //goalsViewModel.refresh();
             });
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        noGoalsMessageTextView = view.findViewById(R.id.no_goals_message);
+    }
+    private void observeGoals() {
+        goalsViewModel.getGoals().observe(getViewLifecycleOwner(), new Observer<List<Goal>>() {
+            @Override
+            public void onChanged(List<Goal> goals) {
+                if (goals != null && !goals.isEmpty()) {
+                    noGoalsMessageTextView.setVisibility(View.GONE);
+                } else {
+                    noGoalsMessageTextView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -70,12 +93,13 @@ public class GoalsFragment extends Fragment {
             goalAdapter.setGoalList(goals);
         });
 
+
         FloatingActionButton fab = root.findViewById(R.id.add_goal);
         fab.setOnClickListener(view -> {
             AddGoalDialog addGoalDialog = new AddGoalDialog();
             addGoalDialog.show(getChildFragmentManager(), "add_goal");
         });
-
+        observeGoals();
         return root;
     }
 
@@ -104,6 +128,9 @@ public class GoalsFragment extends Fragment {
             this.goalList = new ArrayList<>(goalList);
             notifyDataSetChanged();
         }
+
+
+
         public void setFilteredList(List<Goal> filteredList){
             this.goalList = filteredList;
             notifyDataSetChanged();
@@ -116,8 +143,32 @@ public class GoalsFragment extends Fragment {
 
         @Override
         public void onBindViewHolder (@NonNull GoalAdapter.GoalCardHolder holder,int position) {
+            List<String> hours = goalList.get(position).getHours();
+
             holder.nameText.setText(goalList.get(position).goalName);
-            holder.nextReminder.setText(getString(R.string.label_next_reminder, goalList.get(position).periodHours));
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String creationDate = dateFormat.format(goalList.get(position).creationDate);
+            holder.creationDateText.setText(creationDate);
+
+            holder.hoursLayout.removeAllViews();
+            for (String hour : hours) {
+                TextView hourTextView = new TextView(holder.itemView.getContext());
+                hourTextView.setText(hour);
+                holder.hoursLayout.addView(hourTextView);
+            }
+
+            Integer completedEventCount = goalList.get(position).getCompletedEventCount();
+            Integer totalEventCount = goalList.get(position).getEventCount();
+
+            if (completedEventCount != null && totalEventCount != null) {
+                String eventStatus = completedEventCount + "/" + totalEventCount;
+                holder.statusText.setText(eventStatus);
+            } else {
+                holder.statusText.setText("0/0");
+            }
+
+//            holder.nextReminder.setText(getString(R.string.label_next_reminder, goalList.get(position).periodHours));
         }
 
 
@@ -128,17 +179,17 @@ public class GoalsFragment extends Fragment {
 
         public class GoalCardHolder extends RecyclerView.ViewHolder {
             TextView nameText;
-            TextView nextReminder;
-            ImageView delete;
+            LinearLayout hoursLayout;
+            TextView creationDateText;
+            TextView statusText;
 
 
             public GoalCardHolder(View view) {
                 super(view);
                 nameText = view.findViewById(R.id.name_tv);
-                nextReminder = view.findViewById(R.id.next_reminder_tv);
-                delete = view.findViewById(R.id.goal_delete);
-
-                delete.setOnClickListener(v -> goalsViewModel.deleteGoal(goalList.get(getAdapterPosition())));
+                hoursLayout = view.findViewById(R.id.hours_layout);
+                creationDateText = view.findViewById(R.id.creation_date_tv);
+                statusText= view.findViewById(R.id.status_tv);
 
                 view.setOnClickListener(v -> {
                     Intent i = new Intent(getActivity(), GoalInfoActivity.class);

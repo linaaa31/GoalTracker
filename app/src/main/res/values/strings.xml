@@ -12,5 +12,6 @@
     <string name="goal_period_unit">hours</string>
     <string name="add_goal_button">Add</string>
     <string name="label_next_reminder">Next reminder at: %1$d</string>
+    <string name="add_hour">Add hour</string>
 
 </resources>

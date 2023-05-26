@@ -10,5 +10,9 @@
     <color name="green">#1CDD24</color>
     <color name="blue_black">#FF121B30</color>
     <color name="blue">#2587D5</color>
+    <color name="gray">#21242B</color>
+    <color name="nav_color">#363B4A</color>
+    <color name="light_blue">#2E73FD</color>
+    <color name="secondary_color">#666A73</color>
 
 </resources>

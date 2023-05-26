@@ -11,6 +11,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.app.goaltracker.db.AppDatabase;
 import com.app.goaltracker.db.DatabaseClient;
 import com.app.goaltracker.db.Goal;
+import com.app.goaltracker.db.History;
 
 import java.util.List;
 
@@ -29,29 +30,52 @@ public class GoalsViewModel extends AndroidViewModel {
         return goals;
     }
 
-    public void addGoal(@NonNull String goalName, Integer period) {
+    public void addGoal(@NonNull String goalName,  List<String> hours) {
         AsyncTask.execute(() -> {
-            appDatabase.goalDao().insertGoal(new Goal(goalName, period));
+            appDatabase.goalDao().insertGoal(new Goal(goalName, hours));
             refreshGoalList();
         });
     }
 
-    public void deleteGoal(Goal goal) {
-        AsyncTask.execute(() -> {
-            appDatabase.goalDao().delete(goal);
-            refreshGoalList();
-        });
-    }
+
+public void deleteGoalById(int goalId) {
+    AsyncTask.execute(() -> {
+        appDatabase.goalDao().deleteById(goalId);
+        refreshGoalList();
+    });
+}
 
     public void refreshGoalList() {
         List<Goal> updateList = appDatabase.goalDao().getAllGoals();
+
+        for (Goal goal : updateList) {
+            LiveData<List<History>> historyLiveData = appDatabase.historyDao().getHistoryByGoalId(goal.getGoalId());
+            List<History> historyList = historyLiveData.getValue();
+
+            if (historyList != null) {
+                int completedEventCount = 0;
+
+                for (History history : historyList) {
+                    if (history.isResult()) {
+                        completedEventCount++;
+                    }
+                }
+
+                goal.setEventCount(historyList.size());
+                goal.setCompletedEventCount(completedEventCount);
+            }
+        }
+
         goals.postValue(updateList);
     }
+
     public void readRequest() {
         AsyncTask.execute(() -> {
             refreshGoalList();
         });
     }
+
+
 
     public void updateGoal(Goal goal) {
         AsyncTask.execute(() -> {
@@ -59,4 +83,31 @@ public class GoalsViewModel extends AndroidViewModel {
             refreshGoalList();
         });
     }
+
+    public void addHour(Goal goal, String hour) {
+        AsyncTask.execute(() -> {
+            goal.addHour(hour);
+            appDatabase.goalDao().updateGoal(goal);
+            refreshGoalList();
+        });
+    }
+
+    public void removeHour(Goal goal, String hour) {
+        AsyncTask.execute(() -> {
+            goal.removeHour(hour);
+            appDatabase.goalDao().updateGoal(goal);
+            refreshGoalList();
+        });
+    }
 }
+//    public void refreshGoalList() {
+//        List<Goal> updateList = appDatabase.goalDao().getAllGoals();
+//        goals.postValue(updateList);
+//    }
+
+//    public void deleteGoal(Goal goal) {
+//        AsyncTask.execute(() -> {
+//            appDatabase.goalDao().delete(goal);
+//            refreshGoalList();
+//        });
+//    }
