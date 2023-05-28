@@ -14,6 +14,7 @@ import com.app.goaltracker.db.Goal;
 import com.app.goaltracker.db.History;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class GoalsViewModel extends AndroidViewModel {
     private AppDatabase appDatabase;
@@ -46,28 +47,55 @@ public void deleteGoalById(int goalId) {
 }
 
     public void refreshGoalList() {
-        List<Goal> updateList = appDatabase.goalDao().getAllGoals();
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Goal> updatedGoals = appDatabase.goalDao().getAllGoals();
 
-        for (Goal goal : updateList) {
-            LiveData<List<History>> historyLiveData = appDatabase.historyDao().getHistoryByGoalId(goal.getGoalId());
-            List<History> historyList = historyLiveData.getValue();
+            for (Goal goal : updatedGoals) {
+                LiveData<List<History>> historyLiveData = appDatabase.historyDao().getHistoryByGoalId(goal.getGoalId());
+                List<History> historyList = historyLiveData.getValue();
 
-            if (historyList != null) {
-                int completedEventCount = 0;
+                if (historyList != null) {
+                    int completedEventCount = 0;
 
-                for (History history : historyList) {
-                    if (history.isResult()) {
-                        completedEventCount++;
+                    for (History history : historyList) {
+                        if (history.isResult()) {
+                            completedEventCount++;
+                        }
                     }
+
+                    goal.setEventCount(historyList.size());
+                    goal.setCompletedEventCount(completedEventCount);
                 }
-
-                goal.setEventCount(historyList.size());
-                goal.setCompletedEventCount(completedEventCount);
             }
-        }
 
-        goals.postValue(updateList);
+            goals.postValue(updatedGoals);
+        });
     }
+
+//
+//    public void refreshGoalList() {
+//        List<Goal> updateList = appDatabase.goalDao().getAllGoals();
+//
+//        for (Goal goal : updateList) {
+//            LiveData<List<History>> historyLiveData = appDatabase.historyDao().getHistoryByGoalId(goal.getGoalId());
+//            List<History> historyList = historyLiveData.getValue();
+//
+//            if (historyList != null) {
+//                int completedEventCount = 0;
+//
+//                for (History history : historyList) {
+//                    if (history.isResult()) {
+//                        completedEventCount++;
+//                    }
+//                }
+//
+//                goal.setEventCount(historyList.size());
+//                goal.setCompletedEventCount(completedEventCount);
+//            }
+//        }
+//
+//        goals.postValue(updateList);
+//    }
 
     public void readRequest() {
         AsyncTask.execute(() -> {

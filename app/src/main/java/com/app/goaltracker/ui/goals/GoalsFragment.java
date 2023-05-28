@@ -44,7 +44,7 @@ public class GoalsFragment extends Fragment {
     ActivityResultLauncher<Intent> infoLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                //goalsViewModel.refresh();
+               goalsViewModel.refreshGoalList();
             });
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -130,6 +130,11 @@ public class GoalsFragment extends Fragment {
         }
 
 
+        public void updateProgressBar(int position, int progress) {
+            // Update the progress value for the corresponding item in the goalList
+            goalList.get(position).setProgress(progress);
+            notifyDataSetChanged();
+        }
 
         public void setFilteredList(List<Goal> filteredList){
             this.goalList = filteredList;
@@ -155,7 +160,7 @@ public class GoalsFragment extends Fragment {
             for (String hour : hours) {
                 TextView hourTextView = new TextView(holder.itemView.getContext());
                 hourTextView.setText(hour);
-                holder.hoursLayout.addView(hourTextView);
+               // holder.hoursLayout.addView(hourTextView);
             }
 
             Integer completedEventCount = goalList.get(position).getCompletedEventCount();
@@ -167,6 +172,8 @@ public class GoalsFragment extends Fragment {
             } else {
                 holder.statusText.setText("0/0");
             }
+
+
 
 //            holder.nextReminder.setText(getString(R.string.label_next_reminder, goalList.get(position).periodHours));
         }
@@ -190,13 +197,39 @@ public class GoalsFragment extends Fragment {
                 hoursLayout = view.findViewById(R.id.hours_layout);
                 creationDateText = view.findViewById(R.id.creation_date_tv);
                 statusText= view.findViewById(R.id.status_tv);
-
                 view.setOnClickListener(v -> {
-                    Intent i = new Intent(getActivity(), GoalInfoActivity.class);
-                    i.putExtra(Constants.GOAL_ID, goalList.get(getAdapterPosition()).goalId);
-                    i.putExtra(Constants.GOAL_NAME, goalList.get(getAdapterPosition()).goalName);
-                    infoLauncher.launch(i);
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        Goal goal = goalList.get(position);
+                        Context context = v.getContext();
+                        Intent intent = new Intent(context, GoalInfoActivity.class);
+                        intent.putExtra("goal_id", goal.goalId);
+                        intent.putExtra("goal_name", goal.goalName);
+                        long creationDateMillis = goalList.get(position).creationDate.getTime();
+                        intent.putExtra("creation_date", creationDateMillis);
+                        Integer completedEventCount = goal.getCompletedEventCount();
+                        Integer eventCount = goal.getEventCount();
+                        String eventStatus;
+                        if(completedEventCount == null && eventCount ==null){
+                            eventStatus="0/0";
+                        }else {
+                            eventStatus = completedEventCount + "/" + eventCount;
+                        }
+                        intent.putExtra("event_status", eventStatus);
+
+                        intent.putStringArrayListExtra("reminder_hours", new ArrayList<>(goal.getHours()));
+                      //  context.startActivity(intent);
+                        infoLauncher.launch(intent);
+                    }
                 });
+
+
+//                view.setOnClickListener(v -> {
+//                    Intent i = new Intent(getActivity(), GoalInfoActivity.class);
+//                    i.putExtra(Constants.GOAL_ID, goalList.get(getAdapterPosition()).goalId);
+//                    i.putExtra(Constants.GOAL_NAME, goalList.get(getAdapterPosition()).goalName);
+//                    infoLauncher.launch(i);
+//                });
             }
         }
     }

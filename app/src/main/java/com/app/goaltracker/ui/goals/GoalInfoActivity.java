@@ -19,7 +19,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +41,7 @@ import androidx.fragment.app.FragmentManager;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,6 +51,10 @@ public class GoalInfoActivity extends AppCompatActivity {
     private ActivityGoalInfoBinding binding;
     private ImageView hamburgerMenu;
     private ImageView backButton;
+    private TextView creationDateTextView;
+    private TextView eventStatusTextView;
+    private LinearLayout hoursLayout;
+    private SeekBar seekBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +101,61 @@ public class GoalInfoActivity extends AppCompatActivity {
 
             }
         });
-   }
+
+        creationDateTextView = findViewById(R.id.creation_date);
+        eventStatusTextView= findViewById(R.id.status);
+        hoursLayout= findViewById(R.id.hours_layout);
+        Intent intent = getIntent();
+        if (intent != null) {
+            String eventStatusText = intent.getStringExtra("event_status");
+
+            long creationDateMillis = intent.getLongExtra("creation_date", 0);
+            Date creationDate = new Date(creationDateMillis);
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String formattedCreationDate = dateFormat.format(creationDate);
+            creationDateTextView.setText(formattedCreationDate);
+            eventStatusTextView.setText(eventStatusText);
+            ArrayList<String> reminderHours = intent.getStringArrayListExtra("reminder_hours");
+
+            hoursLayout.removeAllViews();
+
+            for (String hour : reminderHours) {
+                TextView hourTextView = new TextView(this);
+                hourTextView.setText(hour);
+                hoursLayout.addView(hourTextView);
+            }
+
+        }
+//        SeekBar seekBar = findViewById(R.id.progress_slider);
+//        int initialProgress = getIntent().getIntExtra("progress", 0);
+//        seekBar.setProgress(initialProgress);
+
+//        SeekBar seekBar = findViewById(R.id.progress_slider);
+//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+//            @Override
+//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+//                // Update the progress of the corresponding goal in the GoalsFragment
+//                if (fromUser) {
+//                    // Assuming you have a reference to the GoalsFragment
+//                    goalsFragment.updateProgressBar(goalPosition, progress);
+//                }
+//            }
+//
+//            @Override
+//            public void onStartTrackingTouch(SeekBar seekBar) {
+//                // Called when the user starts interacting with the seek bar
+//            }
+//
+//            @Override
+//            public void onStopTrackingTouch(SeekBar seekBar) {
+//                // Called when the user stops interacting with the seek bar
+//                // You can perform any final actions here, such as saving the progress value
+//            }
+//        });
+
+
+
+    }
 private void deleteGoal() {
     GoalsViewModel goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
     AlertDialog.Builder builder = new AlertDialog.Builder(this);

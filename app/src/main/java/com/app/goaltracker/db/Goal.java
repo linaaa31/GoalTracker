@@ -47,6 +47,9 @@ public class Goal {
     @ColumnInfo(name = "completed_event_count")
     public Integer completedEventCount;
 
+    @ColumnInfo(name = "progress")
+    public Integer progress;
+
     @NonNull
     @ColumnInfo(name = "hours")
     public List<String> hours;
@@ -89,6 +92,13 @@ public class Goal {
         this.completedEventCount = completedEventCount;
     }
 
+    public Integer getProgress() {
+        return progress;
+    }
+
+    public void setProgress(Integer progress) {
+        this.progress = progress;
+    }
 
     public void addHour(String hour) {
         if (hours == null) {
