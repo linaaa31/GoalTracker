@@ -12,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,13 +57,15 @@ public class GoalInfoActivity extends AppCompatActivity {
     private TextView eventStatusTextView;
     private LinearLayout hoursLayout;
     private SeekBar seekBar;
+    private int progress;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityGoalInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        seekBar = findViewById(R.id.progress_slider);
         backButton = findViewById(R.id.back_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,37 +128,32 @@ public class GoalInfoActivity extends AppCompatActivity {
                 hourTextView.setText(hour);
                 hoursLayout.addView(hourTextView);
             }
-
         }
-//        SeekBar seekBar = findViewById(R.id.progress_slider);
-//        int initialProgress = getIntent().getIntExtra("progress", 0);
-//        seekBar.setProgress(initialProgress);
 
-//        SeekBar seekBar = findViewById(R.id.progress_slider);
-//        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-//            @Override
-//            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-//                // Update the progress of the corresponding goal in the GoalsFragment
-//                if (fromUser) {
-//                    // Assuming you have a reference to the GoalsFragment
-//                    goalsFragment.updateProgressBar(goalPosition, progress);
-//                }
-//            }
-//
-//            @Override
-//            public void onStartTrackingTouch(SeekBar seekBar) {
-//                // Called when the user starts interacting with the seek bar
-//            }
-//
-//            @Override
-//            public void onStopTrackingTouch(SeekBar seekBar) {
-//                // Called when the user stops interacting with the seek bar
-//                // You can perform any final actions here, such as saving the progress value
-//            }
-//        });
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        progress = sharedPreferences.getInt("progress", 0);
+        seekBar.setProgress(progress);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int newProgress, boolean fromUser) {
+                progress = newProgress;
+                Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
+                GoalsViewModel goalsViewModel = new ViewModelProvider(GoalInfoActivity.this).get(GoalsViewModel.class);
+                goalsViewModel.updateGoalProgress(goalId, progress);
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("progress", progress);
+                editor.apply();
+                Toast.makeText(getApplicationContext(), "Final Progress: " + progress, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 private void deleteGoal() {
     GoalsViewModel goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
@@ -217,11 +216,6 @@ private void deleteGoal() {
             historyList = new ArrayList<>();
         }
 
-
-        //  public void setList(List<History> historyList) {
-//            this.historyList = historyList;
-//            notifyDataSetChanged();
-//        }
         public void setList(List<History> historyList) {
             List<History> filteredList = new ArrayList<>();
              for (History history : historyList) {

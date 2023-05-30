@@ -71,31 +71,16 @@ public void deleteGoalById(int goalId) {
             goals.postValue(updatedGoals);
         });
     }
-
-//
-//    public void refreshGoalList() {
-//        List<Goal> updateList = appDatabase.goalDao().getAllGoals();
-//
-//        for (Goal goal : updateList) {
-//            LiveData<List<History>> historyLiveData = appDatabase.historyDao().getHistoryByGoalId(goal.getGoalId());
-//            List<History> historyList = historyLiveData.getValue();
-//
-//            if (historyList != null) {
-//                int completedEventCount = 0;
-//
-//                for (History history : historyList) {
-//                    if (history.isResult()) {
-//                        completedEventCount++;
-//                    }
-//                }
-//
-//                goal.setEventCount(historyList.size());
-//                goal.setCompletedEventCount(completedEventCount);
-//            }
-//        }
-//
-//        goals.postValue(updateList);
-//    }
+    public void updateGoalProgress(int goalId, int progress) {
+        AsyncTask.execute(() -> {
+            Goal goal = appDatabase.goalDao().getGoalById(goalId);
+            if (goal != null) {
+                goal.setProgress(progress);
+                appDatabase.goalDao().updateGoal(goal);
+            }
+            refreshGoalList();
+        });
+    }
 
     public void readRequest() {
         AsyncTask.execute(() -> {

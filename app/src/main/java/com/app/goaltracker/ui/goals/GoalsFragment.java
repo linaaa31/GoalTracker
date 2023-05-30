@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -128,12 +129,12 @@ public class GoalsFragment extends Fragment {
             this.goalList = new ArrayList<>(goalList);
             notifyDataSetChanged();
         }
-
-
         public void updateProgressBar(int position, int progress) {
-            // Update the progress value for the corresponding item in the goalList
-            goalList.get(position).setProgress(progress);
-            notifyDataSetChanged();
+            Goal goal = goalList.get(position);
+            if (goal != null) {
+                goal.setProgress(progress);
+                notifyItemChanged(position);
+            }
         }
 
         public void setFilteredList(List<Goal> filteredList){
@@ -172,8 +173,7 @@ public class GoalsFragment extends Fragment {
             } else {
                 holder.statusText.setText("0/0");
             }
-
-
+              holder.progressBar.setProgress(goalList.get(position).getProgress()!=null? goalList.get(position).getProgress():0);
 
 //            holder.nextReminder.setText(getString(R.string.label_next_reminder, goalList.get(position).periodHours));
         }
@@ -189,6 +189,7 @@ public class GoalsFragment extends Fragment {
             LinearLayout hoursLayout;
             TextView creationDateText;
             TextView statusText;
+            ProgressBar progressBar;
 
 
             public GoalCardHolder(View view) {
@@ -197,6 +198,7 @@ public class GoalsFragment extends Fragment {
                 hoursLayout = view.findViewById(R.id.hours_layout);
                 creationDateText = view.findViewById(R.id.creation_date_tv);
                 statusText= view.findViewById(R.id.status_tv);
+                progressBar = itemView.findViewById(R.id.progress_bar);
                 view.setOnClickListener(v -> {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
@@ -224,13 +226,15 @@ public class GoalsFragment extends Fragment {
                 });
 
 
+
+            }
+        }
+    }
+}
+
 //                view.setOnClickListener(v -> {
 //                    Intent i = new Intent(getActivity(), GoalInfoActivity.class);
 //                    i.putExtra(Constants.GOAL_ID, goalList.get(getAdapterPosition()).goalId);
 //                    i.putExtra(Constants.GOAL_NAME, goalList.get(getAdapterPosition()).goalName);
 //                    infoLauncher.launch(i);
 //                });
-            }
-        }
-    }
-}
