@@ -7,18 +7,23 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.app.goaltracker.db.AppDatabase;
 import com.app.goaltracker.db.DatabaseClient;
 import com.app.goaltracker.db.Goal;
 import com.app.goaltracker.db.History;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 
 public class GoalsViewModel extends AndroidViewModel {
     private AppDatabase appDatabase;
     private MutableLiveData<List<Goal>> goals;
+    private MutableLiveData<Goal> selectedGoal = new MutableLiveData<>();
+    private MutableLiveData<List<Goal>> archivedGoals = new MutableLiveData<>();
 
     public GoalsViewModel(@NonNull Application application) {
         super(application);
@@ -30,6 +35,10 @@ public class GoalsViewModel extends AndroidViewModel {
     public LiveData<List<Goal>> getGoals() {
         return goals;
     }
+    public LiveData<List<Goal>> getArchivedGoals() {
+        return appDatabase.goalDao().getArchivedGoals();
+    }
+
 
     public void addGoal(@NonNull String goalName,  List<String> hours) {
         AsyncTask.execute(() -> {
@@ -45,6 +54,27 @@ public void deleteGoalById(int goalId) {
         refreshGoalList();
     });
 }
+
+public void archiveGoal(int goalId) {
+    AsyncTask.execute(() -> {
+        Goal goal = appDatabase.goalDao().getGoalById(goalId);
+        if (goal != null) {
+            goal.setArchived(true);
+            goal.setArchiveDate(new Date());
+            appDatabase.goalDao().updateGoal(goal);
+        }
+    });
+}
+    public void unarchiveGoal(int goalId) {
+        AsyncTask.execute(() -> {
+            Goal goal = appDatabase.goalDao().getGoalById(goalId);
+            if (goal != null) {
+                goal.setArchived(false);
+                goal.setArchiveDate(null);
+                appDatabase.goalDao().updateGoal(goal);
+            }
+        });
+    }
 
     public void refreshGoalList() {
         Executors.newSingleThreadExecutor().execute(() -> {
@@ -67,7 +97,6 @@ public void deleteGoalById(int goalId) {
                     goal.setCompletedEventCount(completedEventCount);
                 }
             }
-
             goals.postValue(updatedGoals);
         });
     }
@@ -113,14 +142,4 @@ public void deleteGoalById(int goalId) {
         });
     }
 }
-//    public void refreshGoalList() {
-//        List<Goal> updateList = appDatabase.goalDao().getAllGoals();
-//        goals.postValue(updateList);
-//    }
 
-//    public void deleteGoal(Goal goal) {
-//        AsyncTask.execute(() -> {
-//            appDatabase.goalDao().delete(goal);
-//            refreshGoalList();
-//        });
-//    }

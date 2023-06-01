@@ -1,5 +1,6 @@
 package com.app.goaltracker.ui.goals;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -123,18 +124,16 @@ public class GoalsFragment extends Fragment {
 
     private class GoalAdapter extends RecyclerView.Adapter<GoalAdapter.GoalCardHolder> {
          List<Goal> goalList;
+         List<Goal> archivedGoalList;
 
         public void setGoalList(List<Goal> goalList) {
-           // this.goalList = goalList;
             this.goalList = new ArrayList<>(goalList);
             notifyDataSetChanged();
         }
-        public void updateProgressBar(int position, int progress) {
-            Goal goal = goalList.get(position);
-            if (goal != null) {
-                goal.setProgress(progress);
-                notifyItemChanged(position);
-            }
+
+        @Override
+        public int getItemCount() {
+            return (goalList != null ? goalList.size() : 0) + (archivedGoalList != null ? archivedGoalList.size() : 0);
         }
 
         public void setFilteredList(List<Goal> filteredList){
@@ -147,42 +146,50 @@ public class GoalsFragment extends Fragment {
             return new GoalAdapter.GoalCardHolder(inflater.inflate(R.layout.view_goal_list_item, parent, false));
         }
 
+
         @Override
         public void onBindViewHolder (@NonNull GoalAdapter.GoalCardHolder holder,int position) {
-            List<String> hours = goalList.get(position).getHours();
-
-            holder.nameText.setText(goalList.get(position).goalName);
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            String creationDate = dateFormat.format(goalList.get(position).creationDate);
-            holder.creationDateText.setText(creationDate);
-
-            holder.hoursLayout.removeAllViews();
-            for (String hour : hours) {
-                TextView hourTextView = new TextView(holder.itemView.getContext());
-                hourTextView.setText(hour);
-               // holder.hoursLayout.addView(hourTextView);
-            }
-
-            Integer completedEventCount = goalList.get(position).getCompletedEventCount();
-            Integer totalEventCount = goalList.get(position).getEventCount();
-
-            if (completedEventCount != null && totalEventCount != null) {
-                String eventStatus = completedEventCount + "/" + totalEventCount;
-                holder.statusText.setText(eventStatus);
+            Goal goal = goalList.get(position);
+            if (goal.getArchived() == true) {
+                holder.itemView.setVisibility(View.GONE);
+                holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
             } else {
-                holder.statusText.setText("0/0");
+                holder.itemView.setVisibility(View.VISIBLE);
+
+                List<String> hours = goalList.get(position).getHours();
+
+                holder.nameText.setText(goalList.get(position).goalName);
+
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                String creationDate = dateFormat.format(goalList.get(position).creationDate);
+                holder.creationDateText.setText(creationDate);
+
+                holder.hoursLayout.removeAllViews();
+                for (String hour : hours) {
+                    TextView hourTextView = new TextView(holder.itemView.getContext());
+                    hourTextView.setText(hour);
+                    // holder.hoursLayout.addView(hourTextView);
+                }
+
+                Integer completedEventCount = goalList.get(position).getCompletedEventCount();
+                Integer totalEventCount = goalList.get(position).getEventCount();
+
+                if (completedEventCount != null && totalEventCount != null) {
+                    String eventStatus = completedEventCount + "/" + totalEventCount;
+                    holder.statusText.setText(eventStatus);
+                } else {
+                    holder.statusText.setText("0/0");
+                }
+                holder.progressBar.setProgress(goalList.get(position).getProgress() != null ? goalList.get(position).getProgress() : 0);
             }
-              holder.progressBar.setProgress(goalList.get(position).getProgress()!=null? goalList.get(position).getProgress():0);
+
+
 
 //            holder.nextReminder.setText(getString(R.string.label_next_reminder, goalList.get(position).periodHours));
         }
 
 
-        @Override
-        public int getItemCount() {
-            return goalList != null ? goalList.size() : 0;
-        }
+
 
         public class GoalCardHolder extends RecyclerView.ViewHolder {
             TextView nameText;
@@ -224,9 +231,6 @@ public class GoalsFragment extends Fragment {
                         infoLauncher.launch(intent);
                     }
                 });
-
-
-
             }
         }
     }

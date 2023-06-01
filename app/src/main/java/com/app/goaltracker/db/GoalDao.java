@@ -1,5 +1,6 @@
 package com.app.goaltracker.db;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -21,6 +22,8 @@ public interface GoalDao {
 
     @Delete
     void delete(Goal goal);
+    @Query("SELECT * FROM Goals WHERE archived = 1")
+    LiveData<List<Goal>> getArchivedGoals();
 
     @Query("DELETE FROM Goals WHERE goal_id = :goalId")
     void deleteById(int goalId);

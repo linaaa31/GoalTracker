@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -59,11 +60,14 @@ public class GoalInfoActivity extends AppCompatActivity {
     private SeekBar seekBar;
     private int progress;
     private SharedPreferences sharedPreferences;
+    private GoalsViewModel goalsViewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityGoalInfoBinding.inflate(getLayoutInflater());
+        goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
         setContentView(binding.getRoot());
         seekBar = findViewById(R.id.progress_slider);
         backButton = findViewById(R.id.back_button);
@@ -120,18 +124,17 @@ public class GoalInfoActivity extends AppCompatActivity {
             creationDateTextView.setText(formattedCreationDate);
             eventStatusTextView.setText(eventStatusText);
             ArrayList<String> reminderHours = intent.getStringArrayListExtra("reminder_hours");
+            if (reminderHours != null) {
+                hoursLayout.removeAllViews();
 
-            hoursLayout.removeAllViews();
-
-            for (String hour : reminderHours) {
-                TextView hourTextView = new TextView(this);
-                hourTextView.setText(hour);
-                hoursLayout.addView(hourTextView);
+                for (String hour : reminderHours) {
+                    TextView hourTextView = new TextView(this);
+                    hourTextView.setText(hour);
+                    hoursLayout.addView(hourTextView);
+                }
             }
         }
-
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
         progress = sharedPreferences.getInt("progress", 0);
         seekBar.setProgress(progress);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -166,7 +169,6 @@ private void deleteGoal() {
 
                     Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
                     goalsViewModel.deleteGoalById(goalId);
-                    // goalsViewModel.refreshGoalList();
                     finish();
                 }
             })
@@ -178,6 +180,16 @@ private void deleteGoal() {
             })
             .show();
 }
+
+    private void archiveGoal() {
+        GoalsViewModel goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
+        Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
+        goalsViewModel.archiveGoal(goalId);
+        finish();
+
+    }
+
+
     private void showPopupMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
         popupMenu.inflate(R.menu.main_menu);
@@ -191,8 +203,7 @@ private void deleteGoal() {
                     deleteGoal();
                     return true;
                     case R.id.archive_goal:
-
-
+                        archiveGoal();
                         return true;
                     default:
                         return false;
@@ -208,7 +219,6 @@ private void deleteGoal() {
     private class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
         private List<History> historyList;
-        private Context context;
         private Integer goalId;
 
         public HistoryAdapter(Integer goalId) {
@@ -264,5 +274,4 @@ private void deleteGoal() {
 
         }
     }
-
 }

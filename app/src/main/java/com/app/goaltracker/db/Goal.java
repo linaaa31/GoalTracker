@@ -91,13 +91,23 @@ public class Goal {
     public void setCompletedEventCount(@NonNull Integer completedEventCount) {
         this.completedEventCount = completedEventCount;
     }
-
+    public void setArchived(@NonNull Boolean archived) {
+        this.archived = archived;
+    }
     public Integer getProgress() {
         return progress;
     }
 
     public void setProgress(Integer progress) {
         this.progress = progress;
+    }
+    public void setArchiveDate(Date archiveDate) {
+        this.archiveDate = archiveDate;
+    }
+
+    @NonNull
+    public Boolean getArchived() {
+        return archived;
     }
 
     public void addHour(String hour) {
@@ -112,5 +122,7 @@ public class Goal {
             hours.remove(hour);
         }
     }
+
+
 
 }

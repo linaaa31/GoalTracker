@@ -32,39 +32,69 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+            android:max="100"
+            app:layout_constraintTop_toBottomOf="@+id/name_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="12dp"
+            />
 
         <TextView
             android:id="@+id/status_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:textColor="@color/white"
-            app:layout_constraintTop_toBottomOf="@+id/name_text"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="12dp"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="12dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/name_text"
+            app:layout_constraintVertical_bias="0.290"
+            />
 
+        <ImageView
+            android:id="@+id/creation_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_calendar"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginBottom="2dp"
+            app:layout_constraintBottom_toBottomOf="@id/creation_date"/>
         <TextView
             android:id="@+id/creation_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            app:layout_constraintTop_toBottomOf="@+id/status_text"
-            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginBottom="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="12dp"
-            />
+            android:layout_marginStart="4dp"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/creation_img"
+            app:layout_constraintTop_toBottomOf="@+id/status_text"
+            app:layout_constraintVertical_bias="0.192" />
+
+        <ImageView
+            android:id="@+id/archive_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_archive_24"
+            app:layout_constraintEnd_toStartOf="@+id/archive_date"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toBottomOf="@id/archive_date"/>
         <TextView
             android:id="@+id/archive_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            app:layout_constraintTop_toBottomOf="@+id/creation_date"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="12dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="12dp"
+            app:layout_constraintBottom_toBottomOf="@id/creation_date"
+          app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="12dp"
+
             />
 
 <!--        <ImageView-->
@@ -78,7 +108,16 @@
 <!--            app:layout_constraintEnd_toStartOf="@id/creation_date_tv"-->
 <!--            />-->
 
-
+        <ImageView
+            android:id="@+id/unarchive_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_unarchive_24"
+            android:padding="16dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/name_text"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
