@@ -5,14 +5,25 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
 
 import java.util.List;
 
 @Dao
 public interface GoalDao {
-    @Query("SELECT * FROM Goals")
-    List<Goal> getAllGoals();
+
+    @Transaction
+    @Query("SELECT * FROM goals WHERE archived != 1")
+    List<GoalWithHistory> getLiveGoalsWithHistory();
+
+    @Transaction
+    @Query("SELECT * FROM goals WHERE archived = 1")
+    List<GoalWithHistory> getArchivedGoalsWithHistory();
+
+    @Transaction
+    @Query("SELECT * FROM Goals WHERE goal_id = :goalId")
+    GoalWithHistory getGoalById(int goalId);
 
     @Insert
     void insertGoal(Goal goal);
@@ -27,7 +38,4 @@ public interface GoalDao {
 
     @Query("DELETE FROM Goals WHERE goal_id = :goalId")
     void deleteById(int goalId);
-
-    @Query("SELECT * FROM Goals WHERE goal_id = :goalId")
-    Goal getGoalById(int goalId);
 }

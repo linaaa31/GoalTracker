@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.goaltracker.R;
 import com.app.goaltracker.db.Goal;
+import com.app.goaltracker.db.GoalWithHistory;
 import com.app.goaltracker.mvvm.GoalsViewModel;
 import com.app.goaltracker.ui.goals.GoalInfoActivity;
 
@@ -38,36 +39,10 @@ public class ArchiveFragment extends Fragment  {
     private TextView emptyArchive;
     private SearchView searchView;
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         emptyArchive = view.findViewById(R.id.archive_empty);
-    }
-    private void observeGoals() {
-        goalsViewModel.getGoals().observe(getViewLifecycleOwner(), new Observer<List<Goal>>() {
-            @Override
-            public void onChanged(List<Goal> goals) {
-                boolean hasArchivedGoals = false;
-                if (goals != null) {
-                    for (Goal goal : goals) {
-                        if (goal.getArchived() == true) {
-                            hasArchivedGoals = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (hasArchivedGoals) {
-                    emptyArchive.setVisibility(View.GONE);
-                } else {
-                    emptyArchive.setVisibility(View.VISIBLE);
-
-                }
-            }
-
-
-        });
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,7 +58,7 @@ public class ArchiveFragment extends Fragment  {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                filterArchivedList(newText);
+                goalsViewModel.setFilterText(newText);
                 return true;
             }
         });
@@ -92,37 +67,27 @@ public class ArchiveFragment extends Fragment  {
         archiveAdapter = new ArchiveAdapter();
         RecyclerView archiveRecyclerView = view.findViewById(R.id.archive_list);
         archiveRecyclerView.setAdapter(archiveAdapter);
-      goalsViewModel = new ViewModelProvider(requireActivity()).get(GoalsViewModel.class);
-       // goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
+        goalsViewModel = new ViewModelProvider(requireActivity()).get(GoalsViewModel.class);
         goalsViewModel.getArchivedGoals().observe(getViewLifecycleOwner(), archivedGoals -> {
             archiveAdapter.setArchiveList(archivedGoals);
+            if (archivedGoals.size() > 0) {
+                emptyArchive.setVisibility(View.GONE);
+            } else {
+                emptyArchive.setVisibility(View.VISIBLE);
+            }
         });
 
-
-
-        observeGoals();
         return view;
-    }
-
-
-    private void filterArchivedList(String text) {
     }
 
     private class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveViewHolder> {
 
-        private List<Goal> archivedGoals;
+        private List<GoalWithHistory> archivedGoals;
 
-        public void setArchiveList(List<Goal> archiveList) {
+        public void setArchiveList(List<GoalWithHistory> archiveList) {
             this.archivedGoals = new ArrayList<>(archiveList);
             notifyDataSetChanged();
         }
-
-
-        public void setFilteredList(List<Goal> filteredList){
-            this.archivedGoals = filteredList;
-            notifyDataSetChanged();
-        }
-
 
         @NonNull
         @Override
@@ -131,46 +96,34 @@ public class ArchiveFragment extends Fragment  {
             return new ArchiveViewHolder(view);
         }
 
-
         @Override
         public void onBindViewHolder(@NonNull ArchiveViewHolder holder, int position) {
-            Goal goal = archivedGoals.get(position);
-            if (goal.getArchived() == false) {
-                holder.itemView.setVisibility(View.GONE);
-                holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
-            } else {
-                holder.itemView.setVisibility(View.VISIBLE);
-                holder.goalNameTextView.setText(archivedGoals.get(position).goalName);
-                holder.goalProgress.setProgress(archivedGoals.get(position).getProgress() != null ? archivedGoals.get(position).getProgress() : 0);
+            GoalWithHistory goal = archivedGoals.get(position);
+            holder.goalNameTextView.setText(archivedGoals.get(position).goal.goalName);
+            holder.goalProgress.setProgress(archivedGoals.get(position).goal.getProgress() != null ? archivedGoals.get(position).goal.getProgress() : 0);
 
-                String eventStatus = getEventStatus(archivedGoals.get(position));
-                holder.eventsStatusTextView.setText(eventStatus);
-
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                String creationDate = dateFormat.format(archivedGoals.get(position).creationDate);
-                holder.creationDateTextView.setText(creationDate);
-
-                SimpleDateFormat dateFormatArchive = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                String archiveDate = dateFormatArchive.format(archivedGoals.get(position).archiveDate);
-                holder.archiveDateTextView.setText(archiveDate);
-                holder.unarchiveButton.setOnClickListener(v -> {
-
-                    int goalId = goal.getGoalId();
-                    goalsViewModel.unarchiveGoal(goalId);
-                });
-            }
-        }
-
-
-        private String getEventStatus(Goal goal) {
-            Integer completedEventCount = goal.getCompletedEventCount();
-            Integer totalEventCount = goal.getEventCount();
+            Integer totalEventCount = goal.historyList.size();
+            Integer completedEventCount = (int) goal.historyList.stream()
+                    .filter(e -> e.result).count();
 
             if (completedEventCount != null && totalEventCount != null) {
-                return completedEventCount + "/" + totalEventCount;
+                String eventStatus = completedEventCount + "/" + totalEventCount;
+                holder.eventsStatusTextView.setText(eventStatus);
             } else {
-                return "0/0";
+                holder.eventsStatusTextView.setText("0/0");
             }
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String creationDate = dateFormat.format(archivedGoals.get(position).goal.creationDate);
+            holder.creationDateTextView.setText(creationDate);
+
+            SimpleDateFormat dateFormatArchive = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            String archiveDate = dateFormatArchive.format(archivedGoals.get(position).goal.archiveDate);
+            holder.archiveDateTextView.setText(archiveDate);
+            holder.unarchiveButton.setOnClickListener(v -> {
+                int goalId = goal.goal.getGoalId();
+                goalsViewModel.unarchiveGoal(goalId);
+            });
         }
 
       @Override
@@ -197,7 +150,6 @@ public class ArchiveFragment extends Fragment  {
                 creationDateTextView = itemView.findViewById(R.id.creation_date);
                 archiveDateTextView = itemView.findViewById(R.id.archive_date);
                 unarchiveButton = itemView.findViewById(R.id.unarchive_bt);
-
             }
         }
     }

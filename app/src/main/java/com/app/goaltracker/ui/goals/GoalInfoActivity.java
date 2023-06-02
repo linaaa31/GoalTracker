@@ -3,17 +3,12 @@ package com.app.goaltracker.ui.goals;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -30,18 +25,11 @@ import android.widget.Toast;
 
 import com.app.goaltracker.AddEventDialog;
 import com.app.goaltracker.Constants;
-import com.app.goaltracker.MainActivity;
 import com.app.goaltracker.databinding.ActivityGoalInfoBinding;
-import com.app.goaltracker.db.AppDatabase;
-import com.app.goaltracker.db.Goal;
+import com.app.goaltracker.db.GoalWithHistory;
 import com.app.goaltracker.mvvm.GoalsViewModel;
-import com.app.goaltracker.mvvm.HistoryViewModel;
-import com.app.goaltracker.mvvm.HistoryViewModelFactory;
 import com.app.goaltracker.R;
 import com.app.goaltracker.db.History;
-import androidx.fragment.app.FragmentManager;
-
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -50,7 +38,6 @@ import java.util.Locale;
 
 public class GoalInfoActivity extends AppCompatActivity {
     private RecyclerView historyRecyclerView;
-    private HistoryViewModel historyViewModel;
     private ActivityGoalInfoBinding binding;
     private ImageView hamburgerMenu;
     private ImageView backButton;
@@ -62,12 +49,10 @@ public class GoalInfoActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private GoalsViewModel goalsViewModel;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityGoalInfoBinding.inflate(getLayoutInflater());
-        goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
         setContentView(binding.getRoot());
         seekBar = findViewById(R.id.progress_slider);
         backButton = findViewById(R.id.back_button);
@@ -91,11 +76,11 @@ public class GoalInfoActivity extends AppCompatActivity {
         Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
         historyRecyclerView.setAdapter(new HistoryAdapter(goalId));
 
-        historyViewModel = new ViewModelProvider(this, new HistoryViewModelFactory(getApplication(), goalId)).get(HistoryViewModel.class);
-        historyViewModel.getHistory().observe(this, new Observer<List<History>>() {
+        goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
+        goalsViewModel.selectGoal(goalId).observe(this, new Observer<GoalWithHistory>() {
             @Override
-            public void onChanged(List<History> history) {
-                ((HistoryAdapter) historyRecyclerView.getAdapter()).setList(history);
+            public void onChanged(GoalWithHistory goalWithHistory) {
+                ((HistoryAdapter) historyRecyclerView.getAdapter()).setList(goalWithHistory.historyList);
             }
         });
 
@@ -103,10 +88,8 @@ public class GoalInfoActivity extends AppCompatActivity {
         binding.submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AddEventDialog addEventDialog = new AddEventDialog(goalId,historyViewModel);
+                AddEventDialog addEventDialog = new AddEventDialog(goalId);
                 addEventDialog.show(getSupportFragmentManager(),"add_event");
-
-
             }
         });
 
@@ -142,7 +125,6 @@ public class GoalInfoActivity extends AppCompatActivity {
             public void onProgressChanged(SeekBar seekBar, int newProgress, boolean fromUser) {
                 progress = newProgress;
                 Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
-                GoalsViewModel goalsViewModel = new ViewModelProvider(GoalInfoActivity.this).get(GoalsViewModel.class);
                 goalsViewModel.updateGoalProgress(goalId, progress);
             }
 
@@ -159,7 +141,6 @@ public class GoalInfoActivity extends AppCompatActivity {
         });
     }
 private void deleteGoal() {
-    GoalsViewModel goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
     builder.setTitle("Confirm Delete")
             .setMessage("Are you sure you want to delete this goal?")
@@ -182,13 +163,11 @@ private void deleteGoal() {
 }
 
     private void archiveGoal() {
-        GoalsViewModel goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
         Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
         goalsViewModel.archiveGoal(goalId);
         finish();
 
     }
-
 
     private void showPopupMenu(View view) {
         PopupMenu popupMenu = new PopupMenu(this, view);
@@ -230,7 +209,7 @@ private void deleteGoal() {
             List<History> filteredList = new ArrayList<>();
              for (History history : historyList) {
              if (history.getGoalId() == goalId) {
-            filteredList.add(history);
+                filteredList.add(history);
              }
              }
              this.historyList = filteredList;

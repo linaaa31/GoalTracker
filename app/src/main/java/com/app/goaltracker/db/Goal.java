@@ -15,6 +15,7 @@ import java.util.List;
 @Entity(tableName = "Goals")
 @TypeConverters({DateConverter.class,ListStringConverter.class})
 public class Goal {
+
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "goal_id")
     public int goalId;
@@ -41,12 +42,6 @@ public class Goal {
     @ColumnInfo(name = "archived")
     public Boolean archived;
 
-    @ColumnInfo(name = "event_count")
-    public Integer eventCount;
-
-    @ColumnInfo(name = "completed_event_count")
-    public Integer completedEventCount;
-
     @ColumnInfo(name = "progress")
     public Integer progress;
 
@@ -66,15 +61,6 @@ public class Goal {
     public List<String> getHours() {
         return hours;
     }
-    @NonNull
-    public Integer getEventCount() {
-        return eventCount;
-    }
-
-    @NonNull
-    public Integer getCompletedEventCount() {
-        return completedEventCount;
-    }
 
     public int getGoalId() {
         return goalId;
@@ -84,13 +70,6 @@ public class Goal {
         this.goalId = goalId;
     }
 
-    public void setEventCount(@NonNull Integer eventCount) {
-        this.eventCount = eventCount;
-    }
-
-    public void setCompletedEventCount(@NonNull Integer completedEventCount) {
-        this.completedEventCount = completedEventCount;
-    }
     public void setArchived(@NonNull Boolean archived) {
         this.archived = archived;
     }

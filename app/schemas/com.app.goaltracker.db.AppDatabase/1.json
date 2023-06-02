@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "a4de0e0b2facf7e33599ff0afe0da0df",
+    "identityHash": "cc32d284577fd9d1e22d3c4b6acadc80",
     "entities": [
       {
         "tableName": "Goals",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`goal_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `creation_date` INTEGER NOT NULL, `archive_date` INTEGER, `goal_name` TEXT NOT NULL, `worst_result` INTEGER NOT NULL, `best_result` INTEGER NOT NULL, `archived` INTEGER NOT NULL, `event_count` INTEGER, `completed_event_count` INTEGER, `progress` INTEGER, `hours` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`goal_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `creation_date` INTEGER NOT NULL, `archive_date` INTEGER, `goal_name` TEXT NOT NULL, `worst_result` INTEGER NOT NULL, `best_result` INTEGER NOT NULL, `archived` INTEGER NOT NULL, `progress` INTEGER, `hours` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "goalId",
@@ -49,18 +49,6 @@
             "columnName": "archived",
             "affinity": "INTEGER",
             "notNull": true
-          },
-          {
-            "fieldPath": "eventCount",
-            "columnName": "event_count",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "completedEventCount",
-            "columnName": "completed_event_count",
-            "affinity": "INTEGER",
-            "notNull": false
           },
           {
             "fieldPath": "progress",
@@ -148,7 +136,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a4de0e0b2facf7e33599ff0afe0da0df')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cc32d284577fd9d1e22d3c4b6acadc80')"
     ]
   }
 }

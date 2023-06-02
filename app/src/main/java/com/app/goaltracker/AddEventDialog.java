@@ -14,29 +14,24 @@ import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.app.goaltracker.databinding.DialogAddEventBinding;
-import com.app.goaltracker.databinding.DialogAddGoalBinding;
 import com.app.goaltracker.db.History;
 import com.app.goaltracker.mvvm.GoalsViewModel;
-import com.app.goaltracker.mvvm.HistoryViewModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddEventDialog extends DialogFragment {
        private int goalId;
         private ViewDataBinding binding;
-        private HistoryViewModel historyViewModel;
+        private GoalsViewModel goalsViewModel;
 
-    public AddEventDialog(int goalId, HistoryViewModel historyViewModel) {
-        this.goalId = goalId;
-        this.historyViewModel = historyViewModel;
-    }
+        public AddEventDialog(int goalId) {
+            this.goalId = goalId;
+        }
 
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             binding = DataBindingUtil.inflate(inflater, R.layout.dialog_add_event, container, false);
+            goalsViewModel = new ViewModelProvider(requireActivity()).get(GoalsViewModel.class);
+
             return binding.getRoot();
         }
 
@@ -73,7 +68,7 @@ public class AddEventDialog extends DialogFragment {
         }
     private void createEvent(boolean result) {
         History history = new History(goalId, result);
-        historyViewModel.addHistory(history);
+        goalsViewModel.addHistory(history);
     }
 }
 
