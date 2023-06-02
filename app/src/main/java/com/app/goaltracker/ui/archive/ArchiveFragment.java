@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +36,7 @@ public class ArchiveFragment extends Fragment  {
     private RecyclerView archiveRecyclerView;
     private ArchiveAdapter archiveAdapter;
     private TextView emptyArchive;
+    private SearchView searchView;
 
 
     @Override
@@ -69,6 +72,21 @@ public class ArchiveFragment extends Fragment  {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_archive, container, false);
+        searchView = view.findViewById(R.id.search);
+        searchView.clearFocus();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterArchivedList(newText);
+                return true;
+            }
+        });
         archiveRecyclerView = view.findViewById(R.id.archive_list);
         archiveRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         archiveAdapter = new ArchiveAdapter();
@@ -81,11 +99,14 @@ public class ArchiveFragment extends Fragment  {
         });
 
 
+
         observeGoals();
         return view;
     }
 
 
+    private void filterArchivedList(String text) {
+    }
 
     private class ArchiveAdapter extends RecyclerView.Adapter<ArchiveAdapter.ArchiveViewHolder> {
 
@@ -95,6 +116,13 @@ public class ArchiveFragment extends Fragment  {
             this.archivedGoals = new ArrayList<>(archiveList);
             notifyDataSetChanged();
         }
+
+
+        public void setFilteredList(List<Goal> filteredList){
+            this.archivedGoals = filteredList;
+            notifyDataSetChanged();
+        }
+
 
         @NonNull
         @Override
@@ -129,7 +157,6 @@ public class ArchiveFragment extends Fragment  {
 
                     int goalId = goal.getGoalId();
                     goalsViewModel.unarchiveGoal(goalId);
-                    goalsViewModel.refreshGoalList();
                 });
             }
         }

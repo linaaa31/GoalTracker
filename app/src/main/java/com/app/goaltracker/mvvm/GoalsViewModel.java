@@ -72,6 +72,7 @@ public void archiveGoal(int goalId) {
                 goal.setArchived(false);
                 goal.setArchiveDate(null);
                 appDatabase.goalDao().updateGoal(goal);
+                refreshGoalList();
             }
         });
     }

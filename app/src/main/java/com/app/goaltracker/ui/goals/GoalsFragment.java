@@ -53,14 +53,26 @@ public class GoalsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         noGoalsMessageTextView = view.findViewById(R.id.no_goals_message);
     }
+
     private void observeGoals() {
         goalsViewModel.getGoals().observe(getViewLifecycleOwner(), new Observer<List<Goal>>() {
             @Override
             public void onChanged(List<Goal> goals) {
-                if (goals != null && !goals.isEmpty()) {
+                boolean hasNonArchivedGoals = false;
+                if (goals != null) {
+                    for (Goal goal : goals) {
+                        if (goal.getArchived() == false) {
+                            hasNonArchivedGoals = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (hasNonArchivedGoals) {
                     noGoalsMessageTextView.setVisibility(View.GONE);
                 } else {
                     noGoalsMessageTextView.setVisibility(View.VISIBLE);
+                    noGoalsMessageTextView.setText("Tap + icon below to create a goal");
                 }
             }
         });
