@@ -4,6 +4,7 @@ import androidx.room.Embedded;
 import androidx.room.Entity;
 import androidx.room.Relation;
 
+import java.util.Date;
 import java.util.List;
 
 public class GoalWithHistory {

@@ -8,7 +8,7 @@
     android:layout_marginBottom="15dp"
     android:layout_marginStart="10dp"
     android:layout_marginEnd="10dp"
-    app:cardBackgroundColor="@color/secondary_color"
+    app:cardBackgroundColor="@color/archive"
     app:cardCornerRadius="18dp"
     app:cardElevation="8dp"
     app:layout_constraintBottom_toBottomOf="parent"
@@ -38,6 +38,7 @@
             android:layout_height="wrap_content"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
             android:max="100"
+            android:progressTint="@color/white"
             app:layout_constraintTop_toBottomOf="@+id/name_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -96,17 +97,6 @@
             android:layout_marginEnd="12dp"
 
             />
-
-<!--        <ImageView-->
-<!--            android:id="@+id/calendar_img"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@drawable/ic_baseline_calendar"-->
-<!--            app:layout_constraintBottom_toBottomOf="@+id/status_tv"-->
-<!--            android:layout_marginEnd="4dp"-->
-<!--            android:layout_marginBottom="2dp"-->
-<!--            app:layout_constraintEnd_toStartOf="@id/creation_date_tv"-->
-<!--            />-->
 
         <ImageView
             android:id="@+id/unarchive_bt"

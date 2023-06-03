@@ -3,12 +3,16 @@ package com.app.goaltracker.ui.goals;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -26,6 +30,7 @@ import android.widget.Toast;
 import com.app.goaltracker.AddEventDialog;
 import com.app.goaltracker.Constants;
 import com.app.goaltracker.databinding.ActivityGoalInfoBinding;
+import com.app.goaltracker.db.Goal;
 import com.app.goaltracker.db.GoalWithHistory;
 import com.app.goaltracker.mvvm.GoalsViewModel;
 import com.app.goaltracker.R;
@@ -48,6 +53,7 @@ public class GoalInfoActivity extends AppCompatActivity {
     private int progress;
     private SharedPreferences sharedPreferences;
     private GoalsViewModel goalsViewModel;
+    private TextView addHour;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +62,7 @@ public class GoalInfoActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         seekBar = findViewById(R.id.progress_slider);
         backButton = findViewById(R.id.back_button);
+        addHour = findViewById(R.id.add_hour_button);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,25 +105,14 @@ public class GoalInfoActivity extends AppCompatActivity {
         hoursLayout= findViewById(R.id.hours_layout);
         Intent intent = getIntent();
         if (intent != null) {
-            String eventStatusText = intent.getStringExtra("event_status");
-
-            long creationDateMillis = intent.getLongExtra("creation_date", 0);
-            Date creationDate = new Date(creationDateMillis);
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-            String formattedCreationDate = dateFormat.format(creationDate);
-            creationDateTextView.setText(formattedCreationDate);
-            eventStatusTextView.setText(eventStatusText);
-            ArrayList<String> reminderHours = intent.getStringArrayListExtra("reminder_hours");
-            if (reminderHours != null) {
-                hoursLayout.removeAllViews();
-
-                for (String hour : reminderHours) {
-                    TextView hourTextView = new TextView(this);
-                    hourTextView.setText(hour);
-                    hoursLayout.addView(hourTextView);
+            goalsViewModel.selectGoal(goalId).observe(this, goalWithHistory -> {
+                if (goalWithHistory != null) {
+                    displayGoalInfo(goalWithHistory);
                 }
-            }
+            });
         }
+        addHour.setOnClickListener(v -> addHourToGoal());
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         progress = sharedPreferences.getInt("progress", 0);
         seekBar.setProgress(progress);
@@ -139,6 +135,100 @@ public class GoalInfoActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Final Progress: " + progress, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void removeHourFromGoal(String hour) {
+        Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
+        goalsViewModel.selectGoal(goalId).observe(this, goalWithHistory -> {
+            if (goalWithHistory != null && goalWithHistory.goal != null && goalWithHistory.goal.hours != null) {
+                Goal goal = goalWithHistory.goal;
+                ArrayList<String> hours = new ArrayList<>(goal.hours); // Create a modifiable copy of the list
+                if (hours.contains(hour)) {
+                    if (hours.size() == 1) {
+                        Toast.makeText(this, "At least one hour must remain", Toast.LENGTH_SHORT).show();
+                    } else {
+                        hours.remove(hour);
+                        goal.hours = hours;
+                        goalsViewModel.removeHour(goal, hour);
+                    }
+                }
+            }
+        });
+    }
+
+    private void addHourToGoal() {
+        TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
+            String hour = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+
+            Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
+            goalsViewModel.selectGoal(goalId).observe(this, goalWithHistory -> {
+                if (goalWithHistory != null && goalWithHistory.goal != null && goalWithHistory.goal.hours != null) {
+                    Goal goal = goalWithHistory.goal;
+                    if (goal.hours.contains(hour)) {
+                        Toast.makeText(this, "This hour already exists", Toast.LENGTH_SHORT).show();
+                    } else {
+                       goalsViewModel.addHour(goal, hour);
+                    }
+                }
+            });
+        }, 0, 0, true);
+
+        timePickerDialog.show();
+    }
+
+    private void displayGoalInfo(GoalWithHistory goalWithHistory) {
+
+        Goal goal = goalWithHistory.goal;
+        List<History> historyList = goalWithHistory.historyList;
+
+        int completedEventCount = 0;
+        int totalEventCount = 0;
+        for (History history : historyList) {
+            if (history.isResult()) {
+                completedEventCount++;
+            }
+            totalEventCount++;
+        }
+        String eventStatus = completedEventCount + "/" + totalEventCount;
+        eventStatusTextView.setText(eventStatus);
+
+        List<String> reminderHours = goal.getHours();
+
+        hoursLayout.removeAllViews();
+        for (int i = 0; i < reminderHours.size(); i++) {
+            String hour = reminderHours.get(i);
+
+            LinearLayout hourLayout = new LinearLayout(this);
+            hourLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+            TextView hourTextView = new TextView(this);
+            hourTextView.setText(hour);
+            hourTextView.setTextSize(16);
+            hourTextView.setTextColor(getResources().getColor(R.color.white));
+
+            ImageView deleteCross = new ImageView(this);
+            deleteCross.setImageResource(R.drawable.ic_delete);
+
+            deleteCross.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    removeHourFromGoal(hour);
+                }
+            });
+
+            hourLayout.addView(hourTextView);
+            hourLayout.addView(deleteCross);
+            hoursLayout.addView(hourLayout);
+        }
+        Date creationDate = goal.getCreationDate();
+        String formattedCreationDate = formatDate(creationDate);
+        creationDateTextView.setText(formattedCreationDate);
+
+    }
+
+    private String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        return dateFormat.format(date);
     }
 private void deleteGoal() {
     AlertDialog.Builder builder = new AlertDialog.Builder(this);

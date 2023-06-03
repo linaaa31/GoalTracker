@@ -44,7 +44,6 @@ public class Goal {
 
     @ColumnInfo(name = "progress")
     public Integer progress;
-
     @NonNull
     @ColumnInfo(name = "hours")
     public List<String> hours;
@@ -83,18 +82,20 @@ public class Goal {
     public void setArchiveDate(Date archiveDate) {
         this.archiveDate = archiveDate;
     }
-
     @NonNull
-    public Boolean getArchived() {
-        return archived;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    public void addHour(String hour) {
-        if (hours == null) {
-            hours = new ArrayList<>();
-        }
-        hours.add(hour);
+public void addHour(String hour) {
+    if (hours == null) {
+        hours = new ArrayList<>();
+    } else {
+        hours = new ArrayList<>(hours);
     }
+    hours.add(hour);
+}
+
 
     public void removeHour(String hour) {
         if (hours != null) {

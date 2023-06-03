@@ -2,6 +2,7 @@ package com.app.goaltracker.mvvm;
 
 import android.app.Application;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -18,6 +19,7 @@ import com.app.goaltracker.db.History;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -95,15 +97,6 @@ public class GoalsViewModel extends AndroidViewModel {
             }
         });
     }
-
-    public void refreshGoalList() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            liveGoals.postValue(appDatabase.goalDao().getLiveGoalsWithHistory());
-            List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
-            archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.contains(filterText)).collect(Collectors.toList()));
-        });
-    }
-
     public void updateGoalProgress(int goalId, int progress) {
         AsyncTask.execute(() -> {
             GoalWithHistory goal = appDatabase.goalDao().getGoalById(goalId);
@@ -114,23 +107,29 @@ public class GoalsViewModel extends AndroidViewModel {
             refreshGoalList();
         });
     }
-
-
+    public void refreshGoalList() {
+        Executors.newSingleThreadExecutor().execute(() -> {
+            liveGoals.postValue(appDatabase.goalDao().getLiveGoalsWithHistory());
+            List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
+            archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.startsWith(filterText)).collect(Collectors.toList()));
+        });
+    }
     public void addHour(Goal goal, String hour) {
-        AsyncTask.execute(() -> {
+     AsyncTask.execute(() -> {
             goal.addHour(hour);
             appDatabase.goalDao().updateGoal(goal);
             refreshGoalList();
         });
-    }
 
+    }
     public void removeHour(Goal goal, String hour) {
+
         AsyncTask.execute(() -> {
             goal.removeHour(hour);
             appDatabase.goalDao().updateGoal(goal);
             refreshGoalList();
         });
-    }
+}
 
     public void addHistory(History history) {
         AsyncTask.execute(() -> {

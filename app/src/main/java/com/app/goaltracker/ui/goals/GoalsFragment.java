@@ -167,4 +167,3 @@ public class GoalsFragment extends Fragment {
         }
     }
 }
-
