@@ -16,15 +16,15 @@
         <item name="android:statusBarColor">@color/light_purple</item>
         <!-- Customize your theme here. -->
     </style>
-    <style name="SearchViewStyle" parent="">
+    <style name="SearchViewStyle" parent="ThemeOverlay.Material3.Search">
         <item name="android:editTextColor">@color/white</item>
         <item name="android:textColorHint">@color/white</item>
         <!-- Add any other desired attributes for your SearchView style -->
     </style>
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <!-- Set the splash screen background, animated icon, and animation duration. -->
-        <item name="windowSplashScreenBackground">@color/blue</item>
-        <item name="windowSplashScreenAnimationDuration">4000</item>
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimationDuration">2000</item>
         <item name="postSplashScreenTheme">@style/Theme.GoalTracker</item>
     </style>
     <style name="RoundedDialog" parent="Theme.AppCompat.Dialog">

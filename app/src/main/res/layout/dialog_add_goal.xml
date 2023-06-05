@@ -28,7 +28,7 @@
             android:id="@+id/add_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_add_circle"
+            android:src="@drawable/ic_baseline_add_circle_goal"
             app:layout_constraintRight_toLeftOf="@+id/add_hour"/>
 
         <TextView

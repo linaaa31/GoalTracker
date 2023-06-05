@@ -121,7 +121,6 @@ public class GoalsFragment extends Fragment {
             for (String hour : hours) {
                 TextView hourTextView = new TextView(holder.itemView.getContext());
                 hourTextView.setText(hour);
-                // holder.hoursLayout.addView(hourTextView);
             }
 
             Integer totalEventCount = goalList.get(position).historyList.size();

@@ -111,7 +111,8 @@ public class GoalsViewModel extends AndroidViewModel {
         Executors.newSingleThreadExecutor().execute(() -> {
             liveGoals.postValue(appDatabase.goalDao().getLiveGoalsWithHistory());
             List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
-            archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.startsWith(filterText)).collect(Collectors.toList()));
+            archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.toLowerCase().startsWith(filterText.toLowerCase())).collect(Collectors.toList()));
+
         });
     }
     public void addHour(Goal goal, String hour) {
@@ -123,7 +124,6 @@ public class GoalsViewModel extends AndroidViewModel {
 
     }
     public void removeHour(Goal goal, String hour) {
-
         AsyncTask.execute(() -> {
             goal.removeHour(hour);
             appDatabase.goalDao().updateGoal(goal);
