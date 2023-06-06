@@ -2,7 +2,9 @@ package com.app.goaltracker.ui.settings;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -30,6 +32,9 @@ public class SettingsFragment extends Fragment {
     private Button toButton;
     private TextView endTimeTextView;
     private DoNotDisturbHours doNotDisturbHours;
+   private Button emailButton ;
+  private  Button shareButton;
+
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,7 +50,8 @@ public class SettingsFragment extends Fragment {
         toButton = view.findViewById(R.id.to_button);
         endTimeTextView = view.findViewById(R.id.end_time_tv);
 
-
+         emailButton= view.findViewById(R.id.email_button);
+         shareButton = view.findViewById(R.id.share_button);
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String startTime = sharedPreferences.getString("startTime", "00:00");
         String endTime = sharedPreferences.getString("endTime", "00:00");
@@ -56,6 +62,12 @@ public class SettingsFragment extends Fragment {
 
         startTimeTextView.setText(startTime);
         endTimeTextView.setText(endTime);
+        emailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openEmailClient();
+            }
+        });
 
         fromButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,6 +83,12 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareApp();
+            }
+        });
 
 
 //        View root = binding.getRoot();
@@ -78,6 +96,24 @@ public class SettingsFragment extends Fragment {
         return view;
 
     }
+    private void openEmailClient() {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+        emailIntent.setData(Uri.parse("mailto:linabadalyann@gmail.com"));
+
+        startActivity(Intent.createChooser(emailIntent, "Choose an email client"));
+    }
+    private void shareApp() {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        String appLink = "https://www.example.com/myapp";
+        String shareMessage = "Check out this cool app:\n" + appLink;
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
+
+        startActivity(Intent.createChooser(shareIntent, "Share via"));
+    }
+
+
+
     private void showTimePickerDialog(final TextView textView) {
 
         final Calendar calendar = Calendar.getInstance();

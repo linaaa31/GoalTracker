@@ -1,25 +1,27 @@
 package com.app.goaltracker.mvvm;
 
 import android.app.Application;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.app.goaltracker.db.AppDatabase;
 import com.app.goaltracker.db.DatabaseClient;
 import com.app.goaltracker.db.Goal;
 import com.app.goaltracker.db.GoalWithHistory;
 import com.app.goaltracker.db.History;
+import com.app.goaltracker.reminder.AlarmHelper;
+import com.app.goaltracker.reminder.ReminderActivity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
@@ -30,9 +32,11 @@ public class GoalsViewModel extends AndroidViewModel {
     private MutableLiveData<List<GoalWithHistory>> archivedGoals;
     private MutableLiveData<GoalWithHistory> selectedGoal;
     private String filterText = "";
+    Context context;
 
     public GoalsViewModel(@NonNull Application application) {
         super(application);
+        this.context = application.getApplicationContext();
         appDatabase = DatabaseClient.getInstance(getApplication()).getAppDatabase();
         liveGoals = new MutableLiveData<>();
         archivedGoals = new MutableLiveData<>();
@@ -52,6 +56,63 @@ public class GoalsViewModel extends AndroidViewModel {
         filterText = txt;
         refreshGoalList();
     }
+    public void setReminder(List<GoalWithHistory> goalList) {
+        Context context = getApplication();
+        Intent intent = new Intent(context, ReminderActivity.class);
+        AlarmHelper.cancelAlarm(context, intent);
+
+        Calendar currentCalendar = Calendar.getInstance();
+        int currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = currentCalendar.get(Calendar.MINUTE);
+
+
+        int nearestRoundHour = (currentMinute >= 30) ? (currentHour + 1) : currentHour;
+        nearestRoundHour = nearestRoundHour % 24;
+
+        List<GoalWithHistory> filteredList = new ArrayList<>();
+
+        if (goalList != null) {
+            for (GoalWithHistory goalWithHistory : goalList) {
+                Goal goal = goalWithHistory.goal;
+                List<String> hours = goal.getHours();
+
+                if (goal != null && hours != null && !hours.isEmpty()) {
+                    boolean hasHourBeforeRoundHour = false;
+
+                    for (String hour : hours) {
+                        String[] timeParts = hour.split(":");
+                        int goalHour = Integer.parseInt(timeParts[0]);
+                        int goalMinute = Integer.parseInt(timeParts[1]);
+
+                        if ((goalHour < nearestRoundHour) || (goalHour == nearestRoundHour && goalMinute < currentMinute)) {
+                            hasHourBeforeRoundHour = true;
+                            break;
+                        }
+                    }
+
+                    if (hasHourBeforeRoundHour) {
+                        filteredList.add(goalWithHistory);
+                    }
+                }
+            }
+        }
+
+        if (!filteredList.isEmpty()) {
+            Calendar triggerCalendar = Calendar.getInstance();
+            triggerCalendar.set(Calendar.HOUR_OF_DAY, nearestRoundHour);
+            triggerCalendar.set(Calendar.MINUTE, 0);
+            triggerCalendar.set(Calendar.SECOND, 0);
+            long triggerTimeInMillis = triggerCalendar.getTimeInMillis();
+
+            context = getApplication();
+            intent = new Intent(context, ReminderActivity.class);
+
+
+            AlarmHelper.setAlarm(context, triggerTimeInMillis, intent);
+        }
+    }
+
+
 
     public void addGoal(@NonNull String goalName, List<String> hours) {
         AsyncTask.execute(() -> {
@@ -112,9 +173,11 @@ public class GoalsViewModel extends AndroidViewModel {
             liveGoals.postValue(appDatabase.goalDao().getLiveGoalsWithHistory());
             List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
             archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.toLowerCase().startsWith(filterText.toLowerCase())).collect(Collectors.toList()));
-
+           // setReminder(liveGoals.getValue());
         });
     }
+
+
     public void addHour(Goal goal, String hour) {
      AsyncTask.execute(() -> {
             goal.addHour(hour);

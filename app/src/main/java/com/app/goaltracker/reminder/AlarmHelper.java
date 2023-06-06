@@ -6,36 +6,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
-import com.app.goaltracker.db.Goal;
-//
-//public class AlarmHelper {
-//
-//    private AlarmManager alarmManager;
-//    private PendingIntent pendingIntent;
-//
-//    public void scheduleAlarm(Context context) {
-//        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//        Intent intent = new Intent(context, AlarmReceiver.class);
-//        pendingIntent = PendingIntent.getBroadcast(context, 200, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
-//        alarmManager.cancel(pendingIntent);
-//        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarmManager.canScheduleExactAlarms()) {
-//
-//            //alarmManager.setAlarmClock(new AlarmManager.AlarmClockInfo(msToOff, null), alarmIntent);
-//            // alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, alarmIntent);
-//        }
-//    }
-//    public void stopAlarm(Context context, int goalId) {
-//        Intent intent = new Intent(context, AlarmReceiver.class);
-//        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, goalId, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-//        alarmManager.cancel(alarmIntent);
-//        alarmIntent.cancel();
-//    }
-//}
-//    public void stopAlarm() {
-//        if (alarmManager != null) {
-//            alarmManager.cancel(alarmIntent);
-//        }
-//    }
-//}
+ public class AlarmHelper {
+    public static void setAlarm(Context context, long triggerTimeInMillis, Intent intent) {
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
+            } else {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
+            }
+        }
+    }
+
+    public static void cancelAlarm(Context context, Intent intent) {
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                context,
+                0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT |PendingIntent.FLAG_ONE_SHOT);
+
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        if (alarmManager != null) {
+            alarmManager.cancel(pendingIntent);
+        }
+    }
+}

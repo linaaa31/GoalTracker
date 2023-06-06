@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -14,16 +18,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GoalTracker"
         tools:targetApi="31">
-    <activity
-            android:name=".ui.goals.GoalInfoActivity"
+        <activity
+            android:name=".reminder.ReminderActivity"
             android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
         </activity>
+        <activity
+            android:name=".ui.goals.GoalInfoActivity"
+            android:exported="false"></activity>
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -31,7 +42,8 @@
         <meta-data
             android:name="android.app.lib_name"
             android:value="" />
-    </application>
 
+        <receiver android:name=".reminder.AlarmReceiver" />
+    </application>
 
 </manifest>

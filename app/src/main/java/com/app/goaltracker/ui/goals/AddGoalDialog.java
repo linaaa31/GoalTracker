@@ -17,12 +17,16 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.app.goaltracker.Constants;
 import com.app.goaltracker.db.Goal;
 import com.app.goaltracker.mvvm.GoalsViewModel;
 import com.app.goaltracker.R;
 import com.app.goaltracker.databinding.DialogAddGoalBinding;
+import com.app.goaltracker.reminder.AlarmHelper;
+import com.app.goaltracker.reminder.NotificationHelper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 public class AddGoalDialog extends DialogFragment {
@@ -73,8 +77,7 @@ public class AddGoalDialog extends DialogFragment {
         });
         goalsViewModel = new ViewModelProvider(requireActivity()).get(GoalsViewModel.class);
         selectedHours = new ArrayList<>();
-    }
-
+}
     private void showTimePickerDialog() {
         TimePickerDialog timePickerDialog = new TimePickerDialog(
                 requireContext(),

@@ -35,8 +35,11 @@ import com.app.goaltracker.db.GoalWithHistory;
 import com.app.goaltracker.mvvm.GoalsViewModel;
 import com.app.goaltracker.R;
 import com.app.goaltracker.db.History;
+import com.app.goaltracker.reminder.AlarmHelper;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -109,14 +112,6 @@ public class GoalInfoActivity extends AppCompatActivity {
         creationDateTextView = findViewById(R.id.creation_date);
         eventStatusTextView= findViewById(R.id.status);
         hoursLayout= findViewById(R.id.hours_layout);
-       // Intent intent = getIntent();
-//        if (intent != null) {
-//            goalsViewModel.selectGoal(goalId).observe(this, goalWithHistory -> {
-//                if (goalWithHistory != null) {
-//                    displayGoalInfo(goalWithHistory);
-//                }
-//            });
-//        }
         addHour.setOnClickListener(v -> addHourToGoal());
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
