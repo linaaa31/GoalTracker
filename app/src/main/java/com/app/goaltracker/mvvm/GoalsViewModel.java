@@ -33,7 +33,6 @@ public class GoalsViewModel extends AndroidViewModel {
     private MutableLiveData<GoalWithHistory> selectedGoal;
     private String filterText = "";
     Context context;
-
     public GoalsViewModel(@NonNull Application application) {
         super(application);
         this.context = application.getApplicationContext();
@@ -168,6 +167,7 @@ public class GoalsViewModel extends AndroidViewModel {
             refreshGoalList();
         });
     }
+
     public void refreshGoalList() {
         Executors.newSingleThreadExecutor().execute(() -> {
             liveGoals.postValue(appDatabase.goalDao().getLiveGoalsWithHistory());

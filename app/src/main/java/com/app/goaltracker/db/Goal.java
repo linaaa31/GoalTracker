@@ -102,7 +102,4 @@ public void addHour(String hour) {
             hours.remove(hour);
         }
     }
-
-
-
 }

@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -22,6 +24,7 @@ import com.app.goaltracker.R;
 import com.app.goaltracker.databinding.FragmentSettingsBinding;
 
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
@@ -32,17 +35,21 @@ public class SettingsFragment extends Fragment {
     private Button toButton;
     private TextView endTimeTextView;
     private DoNotDisturbHours doNotDisturbHours;
-   private Button emailButton ;
-  private  Button shareButton;
+    private Button emailButton ;
+    private  Button shareButton;
+    private ImageView dndArrow;
+
+    private LinearLayout dndChildView;
 
 
+
+    private HashMap<ImageView, LinearLayout> arrowChildViewMap = new HashMap<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         NotificationsViewModel notificationsViewModel =
                 new ViewModelProvider(this).get(NotificationsViewModel.class);
 
-       // binding =  FragmentSettingsBinding.inflate(inflater, container, false);
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
         fromButton = view.findViewById(R.id.from_button);
@@ -89,13 +96,29 @@ public class SettingsFragment extends Fragment {
                 shareApp();
             }
         });
-
-
-//        View root = binding.getRoot();
-//        return root;
+        arrowChildViewMap.put(view.findViewById(R.id.dnd_arrow), view.findViewById(R.id.dnd_child_view));
+        arrowChildViewMap.put(view.findViewById(R.id.contact_arrow), view.findViewById(R.id.contact_child_view));
+        arrowChildViewMap.put(view.findViewById(R.id.share_arrow), view.findViewById(R.id.share_child_view));
+        for (ImageView arrow : arrowChildViewMap.keySet()) {
+            arrow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleChildViewVisibility(arrowChildViewMap.get(arrow));
+                }
+            });
+        }
         return view;
 
     }
+
+    private void toggleChildViewVisibility(LinearLayout childView) {
+        if (childView.getVisibility() == View.VISIBLE) {
+            childView.setVisibility(View.GONE);
+        } else {
+            childView.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void openEmailClient() {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
         emailIntent.setData(Uri.parse("mailto:linabadalyann@gmail.com"));
@@ -105,7 +128,7 @@ public class SettingsFragment extends Fragment {
     private void shareApp() {
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        String appLink = "https://www.example.com/myapp";
+        String appLink = "https://docs.google.com/document/d/1GAN4f8SN3AXmUQNkvLK7lOBO1VZhBYD2vcL2dgiFfhg/edit?usp=drive_link";
         String shareMessage = "Check out this cool app:\n" + appLink;
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
 

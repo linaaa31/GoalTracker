@@ -82,12 +82,34 @@ public class GoalInfoActivity extends AppCompatActivity {
             }
         });
 
+
         historyRecyclerView = findViewById(R.id.reminder_rv);
 
         Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
         historyRecyclerView.setAdapter(new HistoryAdapter(goalId));
-
         goalsViewModel = new ViewModelProvider(this).get(GoalsViewModel.class);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+         progress = sharedPreferences.getInt("progress_" + goalId, 0);
+        seekBar.setProgress(progress);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int newProgress, boolean fromUser) {
+                progress = newProgress;
+                goalsViewModel.updateGoalProgress(goalId, progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("progress_" + goalId, progress);
+                editor.apply();
+                Toast.makeText(getApplicationContext(), "Final Progress: " + progress, Toast.LENGTH_SHORT).show();
+            }
+        });
         goalsViewModel.selectGoal(goalId).observe(this, new Observer<GoalWithHistory>() {
             @Override
             public void onChanged(GoalWithHistory goalWithHistory) {
@@ -114,33 +136,11 @@ public class GoalInfoActivity extends AppCompatActivity {
         hoursLayout= findViewById(R.id.hours_layout);
         addHour.setOnClickListener(v -> addHourToGoal());
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        progress = sharedPreferences.getInt("progress", 0);
-        seekBar.setProgress(progress);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int newProgress, boolean fromUser) {
-                progress = newProgress;
-                Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
-                goalsViewModel.updateGoalProgress(goalId, progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("progress", progress);
-                editor.apply();
-                Toast.makeText(getApplicationContext(), "Final Progress: " + progress, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+ }
     private void removeHourFromGoal(String hour) {
         if (goalWithHistory != null && goalWithHistory.goal != null && goalWithHistory.goal.hours != null) {
             Goal goal = goalWithHistory.goal;
-            ArrayList<String> hours = new ArrayList<>(goal.hours); // Create a modifiable copy of the list
+            ArrayList<String> hours = new ArrayList<>(goal.hours);
             if (hours.contains(hour)) {
                 if (hours.size() == 1) {
                     Toast.makeText(this, "At least one hour must remain", Toast.LENGTH_SHORT).show();
@@ -230,27 +230,27 @@ public class GoalInfoActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         return dateFormat.format(date);
     }
-private void deleteGoal() {
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle("Confirm Delete")
-            .setMessage("Are you sure you want to delete this goal?")
-            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+    private void deleteGoal() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Confirm Delete")
+                .setMessage("Are you sure you want to delete this goal?")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
 
-                    Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
-                    goalsViewModel.deleteGoalById(goalId);
-                    finish();
-                }
-            })
-            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            })
-            .show();
-}
+                        Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
+                        goalsViewModel.deleteGoalById(goalId);
+                        finish();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
 
     private void archiveGoal() {
         Integer goalId = getIntent().getIntExtra(Constants.GOAL_ID, 0);
