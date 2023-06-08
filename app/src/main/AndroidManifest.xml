@@ -20,11 +20,8 @@
         tools:targetApi="31">
         <activity
             android:name=".reminder.ReminderActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:exported="false" />
+
         <activity
             android:name=".ui.goals.GoalInfoActivity"
             android:exported="false"></activity>

@@ -158,7 +158,7 @@ public class GoalInfoActivity extends AppCompatActivity {
 
     private void addHourToGoal() {
         TimePickerDialog timePickerDialog = new TimePickerDialog(this, (view, hourOfDay, minute) -> {
-            String hour = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+            String hour = String.format(Locale.getDefault(), "%02d:00", hourOfDay);
 
             if (goalWithHistory != null && goalWithHistory.goal != null && goalWithHistory.goal.hours != null) {
                 Goal goal = goalWithHistory.goal;

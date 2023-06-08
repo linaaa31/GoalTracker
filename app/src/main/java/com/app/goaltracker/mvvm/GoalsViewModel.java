@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -31,6 +33,7 @@ public class GoalsViewModel extends AndroidViewModel {
     private MutableLiveData<List<GoalWithHistory>> liveGoals;
     private MutableLiveData<List<GoalWithHistory>> archivedGoals;
     private MutableLiveData<GoalWithHistory> selectedGoal;
+    private MutableLiveData<List<GoalWithHistory>> currentGoals;
     private String filterText = "";
     Context context;
     public GoalsViewModel(@NonNull Application application) {
@@ -40,6 +43,7 @@ public class GoalsViewModel extends AndroidViewModel {
         liveGoals = new MutableLiveData<>();
         archivedGoals = new MutableLiveData<>();
         selectedGoal = new MutableLiveData<>();
+        currentGoals = new MutableLiveData<>();
         AsyncTask.execute(this::refreshGoalList);
     }
 
@@ -50,25 +54,24 @@ public class GoalsViewModel extends AndroidViewModel {
     public LiveData<List<GoalWithHistory>> getArchivedGoals() {
         return archivedGoals;
     }
+    public LiveData<List<GoalWithHistory>> getCurrentGoals() {return currentGoals;}
 
     public void setFilterText(String txt) {
         filterText = txt;
         refreshGoalList();
     }
-    public void setReminder(List<GoalWithHistory> goalList) {
+    public void setReminder(LiveData<List<GoalWithHistory>> liveGoals) {
         Context context = getApplication();
         Intent intent = new Intent(context, ReminderActivity.class);
         AlarmHelper.cancelAlarm(context, intent);
 
         Calendar currentCalendar = Calendar.getInstance();
         int currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY);
-        int currentMinute = currentCalendar.get(Calendar.MINUTE);
 
+        int nextHour = currentHour + 1;
+        nextHour = nextHour % 24;
 
-        int nearestRoundHour = (currentMinute >= 30) ? (currentHour + 1) : currentHour;
-        nearestRoundHour = nearestRoundHour % 24;
-
-        List<GoalWithHistory> filteredList = new ArrayList<>();
+        List<GoalWithHistory> goalList = liveGoals.getValue();
 
         if (goalList != null) {
             for (GoalWithHistory goalWithHistory : goalList) {
@@ -76,40 +79,28 @@ public class GoalsViewModel extends AndroidViewModel {
                 List<String> hours = goal.getHours();
 
                 if (goal != null && hours != null && !hours.isEmpty()) {
-                    boolean hasHourBeforeRoundHour = false;
-
                     for (String hour : hours) {
                         String[] timeParts = hour.split(":");
                         int goalHour = Integer.parseInt(timeParts[0]);
-                        int goalMinute = Integer.parseInt(timeParts[1]);
 
-                        if ((goalHour < nearestRoundHour) || (goalHour == nearestRoundHour && goalMinute < currentMinute)) {
-                            hasHourBeforeRoundHour = true;
-                            break;
+                        if (goalHour == nextHour) {
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            Calendar triggerCalendar = Calendar.getInstance();
+                            triggerCalendar.set(Calendar.HOUR_OF_DAY, nextHour);
+                            triggerCalendar.set(Calendar.MINUTE, 0);
+                            triggerCalendar.set(Calendar.SECOND, 0);
+                            long triggerTimeInMillis = triggerCalendar.getTimeInMillis();
+
+                            AlarmHelper.setAlarm(context, triggerTimeInMillis, intent);
+                            context.startActivity(intent);
+                            return;
                         }
-                    }
-
-                    if (hasHourBeforeRoundHour) {
-                        filteredList.add(goalWithHistory);
                     }
                 }
             }
         }
-
-        if (!filteredList.isEmpty()) {
-            Calendar triggerCalendar = Calendar.getInstance();
-            triggerCalendar.set(Calendar.HOUR_OF_DAY, nearestRoundHour);
-            triggerCalendar.set(Calendar.MINUTE, 0);
-            triggerCalendar.set(Calendar.SECOND, 0);
-            long triggerTimeInMillis = triggerCalendar.getTimeInMillis();
-
-            context = getApplication();
-            intent = new Intent(context, ReminderActivity.class);
-
-
-            AlarmHelper.setAlarm(context, triggerTimeInMillis, intent);
-        }
     }
+
 
 
 
@@ -168,14 +159,50 @@ public class GoalsViewModel extends AndroidViewModel {
         });
     }
 
-    public void refreshGoalList() {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            liveGoals.postValue(appDatabase.goalDao().getLiveGoalsWithHistory());
-            List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
-            archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.toLowerCase().startsWith(filterText.toLowerCase())).collect(Collectors.toList()));
-           // setReminder(liveGoals.getValue());
-        });
-    }
+//    public void refreshGoalList() {
+//        Executors.newSingleThreadExecutor().execute(() -> {
+//            liveGoals.postValue(appDatabase.goalDao().getLiveGoalsWithHistory());
+//            List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
+//            archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.toLowerCase().startsWith(filterText.toLowerCase())).collect(Collectors.toList()));
+//            Handler handler = new Handler(Looper.getMainLooper());
+//            handler.post(() -> setReminder(liveGoals));
+//        });
+//    }
+public void refreshGoalList() {
+    Executors.newSingleThreadExecutor().execute(() -> {
+        List<GoalWithHistory> allGoals = appDatabase.goalDao().getLiveGoalsWithHistory();
+        liveGoals.postValue(allGoals);
+
+        List<GoalWithHistory> goalsWithCurrentHour = new ArrayList<>();
+        Calendar currentCalendar = Calendar.getInstance();
+        int currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY);
+
+        for (GoalWithHistory goalWithHistory : allGoals) {
+            Goal goal = goalWithHistory.goal;
+            List<String> hours = goal.getHours();
+
+            if (goal != null && hours != null && !hours.isEmpty()) {
+                for (String hour : hours) {
+                    String[] timeParts = hour.split(":");
+                    int goalHour = Integer.parseInt(timeParts[0]);
+
+                    if (goalHour == currentHour) {
+                        goalsWithCurrentHour.add(goalWithHistory);
+                        break;
+                    }
+                }
+            }
+        }
+
+        currentGoals.postValue(goalsWithCurrentHour);
+
+        List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
+        archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.toLowerCase().startsWith(filterText.toLowerCase())).collect(Collectors.toList()));
+
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(() -> setReminder(liveGoals));
+    });
+}
 
 
     public void addHour(Goal goal, String hour) {

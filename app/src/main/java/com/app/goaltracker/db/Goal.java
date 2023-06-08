@@ -26,6 +26,12 @@ public class Goal {
 
     @ColumnInfo(name = "archive_date")
     public Date archiveDate;
+
+    @NonNull
+    public String getGoalName() {
+        return goalName;
+    }
+
     @NonNull
     @ColumnInfo(name = "goal_name")
     public String goalName;

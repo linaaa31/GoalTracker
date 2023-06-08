@@ -82,7 +82,7 @@ public class AddGoalDialog extends DialogFragment {
         TimePickerDialog timePickerDialog = new TimePickerDialog(
                 requireContext(),
                 (view, hourOfDay, minute) -> {
-                    String formattedHour = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                    String formattedHour = String.format(Locale.getDefault(), "%02d:00", hourOfDay);
                     selectedHours.add(formattedHour);
                     addHourView(formattedHour);
                 },
