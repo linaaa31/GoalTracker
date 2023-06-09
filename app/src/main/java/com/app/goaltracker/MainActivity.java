@@ -3,6 +3,7 @@ package com.app.goaltracker;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import com.app.goaltracker.reminder.NotificationHelper;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.ActionBar;
@@ -29,5 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        NotificationHelper.createChannel(this);
     }
 }
