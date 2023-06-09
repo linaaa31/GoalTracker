@@ -23,6 +23,7 @@ import android.content.Intent;
 
 public class NotificationHelper {
     final static String CHANNEL_ID = "reminder_channel_id";
+
     public static void createChannel(Context context) {
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Goal Channel", NotificationManager.IMPORTANCE_HIGH);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -33,17 +34,18 @@ public class NotificationHelper {
 
     public static void show(Context context, String title, String content) {
         if (context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-
-            Intent intent = new Intent(context, MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 100, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            Intent intent = new Intent(context, ReminderActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_baseline_notification)
                     .setContentTitle(title)
                     .setContentText(content)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                     .setContentIntent(pendingIntent)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                    .setAutoCancel(true);
+
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
             Random random = new Random();
             int notificationId = random.nextInt(1000);

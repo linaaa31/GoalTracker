@@ -6,20 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
- public class AlarmHelper {
+public class AlarmHelper {
     public static void setAlarm(Context context, long triggerTimeInMillis, Intent intent) {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(
                 context, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         if (alarmManager != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
-            } else {
-                alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
-            }
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTimeInMillis, pendingIntent);
         }
     }
 
@@ -34,3 +28,4 @@ import android.os.Build;
         }
     }
 }
+

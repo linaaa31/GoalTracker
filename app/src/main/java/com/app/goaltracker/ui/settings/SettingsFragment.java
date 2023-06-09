@@ -35,15 +35,10 @@ public class SettingsFragment extends Fragment {
     private Button toButton;
     private TextView endTimeTextView;
     private DoNotDisturbHours doNotDisturbHours;
-    private Button emailButton ;
-    private  Button shareButton;
-    private ImageView dndArrow;
-
-    private LinearLayout dndChildView;
-
-
-
-    private HashMap<ImageView, LinearLayout> arrowChildViewMap = new HashMap<>();
+    private TextView contact;
+    private TextView share;
+    private ImageView contactArrow;
+    private ImageView shareArrow;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -56,9 +51,8 @@ public class SettingsFragment extends Fragment {
         startTimeTextView = view.findViewById(R.id.start_time_tv);
         toButton = view.findViewById(R.id.to_button);
         endTimeTextView = view.findViewById(R.id.end_time_tv);
-
-         emailButton= view.findViewById(R.id.email_button);
-         shareButton = view.findViewById(R.id.share_button);
+        contact= view.findViewById(R.id.contact_us);
+        share = view.findViewById(R.id.share);
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         String startTime = sharedPreferences.getString("startTime", "00:00");
         String endTime = sharedPreferences.getString("endTime", "00:00");
@@ -69,12 +63,8 @@ public class SettingsFragment extends Fragment {
 
         startTimeTextView.setText(startTime);
         endTimeTextView.setText(endTime);
-        emailButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openEmailClient();
-            }
-        });
+        contactArrow = view.findViewById(R.id.contact_arrow);
+        shareArrow = view.findViewById(R.id.share_arrow);
 
         fromButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,34 +80,38 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        shareButton.setOnClickListener(new View.OnClickListener() {
+        share.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 shareApp();
             }
         });
-        arrowChildViewMap.put(view.findViewById(R.id.dnd_arrow), view.findViewById(R.id.dnd_child_view));
-        arrowChildViewMap.put(view.findViewById(R.id.contact_arrow), view.findViewById(R.id.contact_child_view));
-        arrowChildViewMap.put(view.findViewById(R.id.share_arrow), view.findViewById(R.id.share_child_view));
-        for (ImageView arrow : arrowChildViewMap.keySet()) {
-            arrow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    toggleChildViewVisibility(arrowChildViewMap.get(arrow));
-                }
-            });
-        }
+        shareArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                shareApp();
+            }
+        });
+
+        contact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openEmailClient();
+            }
+        });
+        contactArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openEmailClient();
+            }
+        });
+
+
         return view;
 
     }
 
-    private void toggleChildViewVisibility(LinearLayout childView) {
-        if (childView.getVisibility() == View.VISIBLE) {
-            childView.setVisibility(View.GONE);
-        } else {
-            childView.setVisibility(View.VISIBLE);
-        }
-    }
+
 
     private void openEmailClient() {
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO);

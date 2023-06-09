@@ -25,7 +25,7 @@
         android:src="@drawable/ic_baseline_arrow_back"
         android:padding="16dp"
         android:layout_marginTop="10dp"
-   app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/title"/>
 
@@ -68,6 +68,7 @@
         android:layout_height="wrap_content"
         android:text="Creation Date"
         android:textSize="18sp"
+        android:textStyle="bold"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/creation_date_text"
         app:layout_constraintBottom_toBottomOf="@+id/creation_date_text"
@@ -102,6 +103,7 @@
         android:layout_height="wrap_content"
         android:text="Event status"
         android:textSize="18sp"
+        android:textStyle="bold"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/status_text"
         app:layout_constraintBottom_toBottomOf="@+id/status_text"
@@ -137,7 +139,7 @@
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@+id/reminder_hours_text"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginStart="30dp" />
+        android:layout_marginStart="40dp" />
 
     <ImageView
         android:id="@+id/add_image"
@@ -154,10 +156,12 @@
         android:layout_marginStart="25dp"
         android:text="@string/add_hour"
         android:textStyle="bold"
-        android:textSize="17sp"
+        android:textSize="18sp"
+        android:layout_marginEnd="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textColor="@color/white"
         android:layout_marginBottom="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/reminder_hours_text"
         app:layout_constraintBottom_toBottomOf="@+id/reminder_hours_text"
         />

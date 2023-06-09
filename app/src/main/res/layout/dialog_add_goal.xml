@@ -28,14 +28,16 @@
             android:id="@+id/add_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:src="@drawable/ic_baseline_add_circle_goal"
             app:layout_constraintRight_toLeftOf="@+id/add_hour"/>
 
         <TextView
             android:id="@+id/add_hour"
+            android:layout_marginTop="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-        android:layout_marginStart="2dp"
+            android:layout_marginStart="2dp"
             android:text="@string/add_hour"
             android:textStyle="bold"
             android:textSize="17sp"

@@ -92,8 +92,6 @@ public class GoalsViewModel extends AndroidViewModel {
                             long triggerTimeInMillis = triggerCalendar.getTimeInMillis();
 
                             AlarmHelper.setAlarm(context, triggerTimeInMillis, intent);
-                            context.startActivity(intent);
-                            return;
                         }
                     }
                 }
