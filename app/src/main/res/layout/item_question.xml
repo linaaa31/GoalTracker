@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- item_question.xml -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -10,30 +9,49 @@
         android:id="@+id/goalNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="@android:color/black"
+      android:layout_marginStart="20dp"
+        android:textSize="20sp"
+        android:textColor="@color/white"
         android:padding="8dp"
-        android:gravity="center"/>
+        android:textStyle="bold"
+        android:gravity="start"/>
 
     <LinearLayout
+        android:id="@+id/event_linear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
+        android:orientation="horizontal"
+        android:padding="10dp">
         <Button
-            android:id="@+id/yesButton"
+            android:id="@+id/yes_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Yes"/>
-
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/blue"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:padding="8dp"
+            android:text="Yes"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="20dp"/>
         <Button
-            android:id="@+id/noButton"
+            android:id="@+id/no_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="No"/>
-
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/blue"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:padding="8dp"
+            android:text="No"
+            android:layout_marginStart="40dp"
+            android:layout_marginEnd="20dp"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.app.goaltracker.R;
 import com.app.goaltracker.databinding.FragmentSettingsBinding;
+import com.app.goaltracker.reminder.NotificationHelper;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ public class SettingsFragment extends Fragment {
     private TextView share;
     private ImageView contactArrow;
     private ImageView shareArrow;
+    private Button not;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -106,7 +108,13 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-
+        not = view.findViewById(R.id.not);
+        not.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NotificationHelper.show(getActivity(), "Goal Reminder", "Reminder");
+            }
+        });
         return view;
 
     }

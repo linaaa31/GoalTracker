@@ -19,13 +19,14 @@ import java.util.Random;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 
 public class NotificationHelper {
     final static String CHANNEL_ID = "reminder_channel_id";
 
     public static void createChannel(Context context) {
-        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Goal Channel", NotificationManager.IMPORTANCE_HIGH);
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "Goal Channel", NotificationManager.IMPORTANCE_DEFAULT);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
         NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
@@ -33,10 +34,11 @@ public class NotificationHelper {
     }
 
     public static void show(Context context, String title, String content) {
+        Log.i("UWC", "Showing notification: " + title + " - " + content);
         if (context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             Intent intent = new Intent(context, ReminderActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(
-                    context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_baseline_notification)
@@ -53,5 +55,6 @@ public class NotificationHelper {
         }
     }
 }
+
 
 

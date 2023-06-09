@@ -24,6 +24,8 @@ import java.util.List;
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        NotificationHelper.show(context, "Goal Reminder", "Reminder");
+        Log.i("UWC", "Alarm received");
+        NotificationHelper.createChannel(context);
+        NotificationHelper.show(context, "Goal Reminder", "Check goals");
     }
 }

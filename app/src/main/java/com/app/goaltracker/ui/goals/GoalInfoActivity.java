@@ -12,6 +12,7 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -336,6 +337,8 @@ public class GoalInfoActivity extends AppCompatActivity {
 
             void bind(History history) {
                 resultTextView.setText(history.result ? "Yes" : "No");
+                int textColor = history.result ? Color.GREEN : Color.RED;
+                resultTextView.setTextColor(textColor);
                 SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
                 String formattedTime = dateFormat.format(history.timestamp);
                 hourTextView.setText(formattedTime);

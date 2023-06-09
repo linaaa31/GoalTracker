@@ -2,6 +2,8 @@ package com.app.goaltracker.reminder;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.app.goaltracker.R;
@@ -19,6 +22,7 @@ import com.app.goaltracker.db.Goal;
 import com.app.goaltracker.db.GoalWithHistory;
 import com.app.goaltracker.db.History;
 import com.app.goaltracker.mvvm.GoalsViewModel;
+import com.app.goaltracker.ui.goals.GoalsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +31,7 @@ public class ReminderActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private QuestionAdapter questionAdapter;
     private GoalsViewModel goalsViewModel;
-
+    private ImageView back;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +50,17 @@ public class ReminderActivity extends AppCompatActivity {
                 questionAdapter.setCurrentGoals(currentGoals);
             }
         });
+        back = findViewById(R.id.back_button);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+
+            }
+        });
     }
+
+
     private class QuestionAdapter extends RecyclerView.Adapter<QuestionAdapter.QuestionViewHolder> {
 
         private List<GoalWithHistory> currentGoals;
@@ -86,8 +100,8 @@ public class ReminderActivity extends AppCompatActivity {
             QuestionViewHolder(@NonNull View itemView) {
                 super(itemView);
                 goalNameTextView = itemView.findViewById(R.id.goalNameTextView);
-                yesButton = itemView.findViewById(R.id.yesButton);
-                noButton = itemView.findViewById(R.id.noButton);
+                yesButton = itemView.findViewById(R.id.yes_button);
+                noButton = itemView.findViewById(R.id.no_button);
             }
 
             void bind(GoalWithHistory goalWithHistory) {
@@ -97,11 +111,18 @@ public class ReminderActivity extends AppCompatActivity {
                 yesButton.setOnClickListener(v -> {
 
                     createEvent(goal, true);
+                    hideButtons();
                 });
 
                 noButton.setOnClickListener(v -> {
                     createEvent(goal, false);
+                    hideButtons();
                 });
+            }
+            private void hideButtons() {
+                yesButton.setVisibility(View.GONE);
+                noButton.setVisibility(View.GONE);
+                goalNameTextView.setVisibility(View.GONE);
             }
 
             private void createEvent(Goal goal, boolean result) {
@@ -111,6 +132,3 @@ public class ReminderActivity extends AppCompatActivity {
         }
     }}
 
-
-//1. filter goals to leave the ones that have reminder now
-//2. create event for each goal and put into HistoryAdapter

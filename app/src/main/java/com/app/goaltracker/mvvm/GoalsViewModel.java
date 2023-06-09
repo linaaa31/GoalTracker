@@ -6,18 +6,22 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.app.goaltracker.MainActivity;
 import com.app.goaltracker.db.AppDatabase;
 import com.app.goaltracker.db.DatabaseClient;
 import com.app.goaltracker.db.Goal;
 import com.app.goaltracker.db.GoalWithHistory;
 import com.app.goaltracker.db.History;
 import com.app.goaltracker.reminder.AlarmHelper;
+import com.app.goaltracker.reminder.AlarmReceiver;
+import com.app.goaltracker.reminder.NotificationHelper;
 import com.app.goaltracker.reminder.ReminderActivity;
 
 import java.util.ArrayList;
@@ -60,9 +64,10 @@ public class GoalsViewModel extends AndroidViewModel {
         filterText = txt;
         refreshGoalList();
     }
+
     public void setReminder(LiveData<List<GoalWithHistory>> liveGoals) {
         Context context = getApplication();
-        Intent intent = new Intent(context, ReminderActivity.class);
+        Intent intent = new Intent(context, AlarmReceiver.class);
         AlarmHelper.cancelAlarm(context, intent);
 
         Calendar currentCalendar = Calendar.getInstance();
@@ -98,6 +103,10 @@ public class GoalsViewModel extends AndroidViewModel {
             }
         }
     }
+
+
+
+
 
 
 
@@ -157,15 +166,7 @@ public class GoalsViewModel extends AndroidViewModel {
         });
     }
 
-//    public void refreshGoalList() {
-//        Executors.newSingleThreadExecutor().execute(() -> {
-//            liveGoals.postValue(appDatabase.goalDao().getLiveGoalsWithHistory());
-//            List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
-//            archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.toLowerCase().startsWith(filterText.toLowerCase())).collect(Collectors.toList()));
-//            Handler handler = new Handler(Looper.getMainLooper());
-//            handler.post(() -> setReminder(liveGoals));
-//        });
-//    }
+
 public void refreshGoalList() {
     Executors.newSingleThreadExecutor().execute(() -> {
         List<GoalWithHistory> allGoals = appDatabase.goalDao().getLiveGoalsWithHistory();
@@ -196,7 +197,7 @@ public void refreshGoalList() {
 
         List<GoalWithHistory> allArchived = appDatabase.goalDao().getArchivedGoalsWithHistory();
         archivedGoals.postValue(allArchived.stream().filter(e -> e.goal.goalName.toLowerCase().startsWith(filterText.toLowerCase())).collect(Collectors.toList()));
-
+        Log.i("UWC", "Refreshing goal list. Number of goals: " + allGoals.size());
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(() -> setReminder(liveGoals));
     });
@@ -227,4 +228,5 @@ public void refreshGoalList() {
         });
     }
 }
+
 
